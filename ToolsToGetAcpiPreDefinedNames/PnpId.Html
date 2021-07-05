@@ -1,0 +1,115 @@
+<table class="colwidths-given longtable docutils align-default" id="acpi-device-ids">
+<caption><span class="caption-number">Table 5.172 </span><span class="caption-text"><strong>ACPI Device IDs</strong></span><a class="headerlink" href="#acpi-device-ids" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col style="width: 15%">
+<col style="width: 85%">
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p><strong>Plug and Play ID</strong></p></th>
+<th class="head"><p><strong>Description</strong></p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>PNP0C08</p></td>
+<td><p><strong>ACPI</strong>. Not declared in ACPI as a device. This ID is used by OSPM for the hardware resources consumed by the ACPI fixed register spaces, and the operation regions used by AML code. It represents the core ACPI hardware itself.</p></td>
+</tr>
+<tr class="row-odd"><td><p>PNP0A05</p></td>
+<td><p><strong>Generic Container Device</strong>. A device whose settings are totally controlled by its ACPI resource information, and otherwise needs no device or bus-specific driver support. This was originally known as Generic ISA Bus Device. This ID should only be used for containers that do not produce resources for consumption by child devices. Any system resources claimed by a PNP0A05 device’s _CRS object must be consumed by the container itself.</p></td>
+</tr>
+<tr class="row-even"><td><p>PNP0A06</p></td>
+<td><p><strong>Generic Container Device</strong>. This device behaves exactly the same as the PNP0A05 device. This was originally known as Extended I/O Bus. This ID should only be used for containers that do not produce resources for consumption by child devices. Any system resources claimed by a PNP0A06 device’s _CRS object must be consumed by the container itself.</p></td>
+</tr>
+<tr class="row-odd"><td><p>PNP0C09</p></td>
+<td><p><strong>Embedded Controller Device</strong>. A host embedded controller controlled through an ACPI-aware driver.</p></td>
+</tr>
+<tr class="row-even"><td><p>PNP0C0A</p></td>
+<td><p><strong>Control Method Battery</strong>. A device that solely implements the ACPI Control Method Battery functions. A device that has some other primary function would use its normal device ID. This ID is used when the devices primary function is that of a battery.</p></td>
+</tr>
+<tr class="row-odd"><td><p>PNP0C0B</p></td>
+<td><p><strong>Fan</strong>. A device that causes cooling when “on” (D0 device state).</p></td>
+</tr>
+<tr class="row-even"><td><p>PNP0C0C</p></td>
+<td><p><strong>Power Button Device</strong>. A device controlled through an ACPI-aware driver that provides power button functionality. This device is only needed if the power button is not supported using the fixed register space.</p></td>
+</tr>
+<tr class="row-odd"><td><p>PNP0C0D</p></td>
+<td><p><strong>Lid Device</strong>. A device controlled through an ACPI-aware driver that provides lid status functionality. This device is only needed if the lid state is not supported using the fixed register space.</p></td>
+</tr>
+<tr class="row-even"><td><p>PNP0C0E</p></td>
+<td><p><strong>Sleep Button Device</strong>. A device controlled through an ACPI-aware driver that provides power button functionality. This device is optional.</p></td>
+</tr>
+<tr class="row-odd"><td><p>PNP0C0F</p></td>
+<td><p><strong>PCI Interrupt Link Device</strong>. A device that allocates an interrupt connected to a PCI interrupt pin. See <a class="reference internal" href="../06_Device_Configuration/Device_Configuration.html#prt-pci-routing-table"><span class="std std-numref">Section 6.2.13</span></a> for more details.</p></td>
+</tr>
+<tr class="row-even"><td><p>PNP0C80</p></td>
+<td><p><strong>Memory Device</strong>. This device is a memory subsystem.</p></td>
+</tr>
+<tr class="row-odd"><td><p>ACPI0001</p></td>
+<td><p><strong>SMBus 1.0 Host Controller</strong>. An SMBus host controller (SMB-HC) compatible with the embedded controller-based SMB-HC interface
+(see <a class="reference internal" href="../12_ACPI_Embedded_Controller_Interface_Specification/smbus-host-controller-interface-via-embedded-controller.html#smbus-host-controller-interface-via-embedded-controller"><span class="std std-numref">Section 12.9</span></a>), and implementing the SMBus 1.0 Specification.</p></td>
+</tr>
+<tr class="row-even"><td><p>ACPI0002</p></td>
+<td><p><strong>Smart Battery Subsystem</strong>. The Smart battery Subsystem specified in Section&nbsp;10, “Power Source Devices.”</p></td>
+</tr>
+<tr class="row-odd"><td><p>ACPI0003</p></td>
+<td><p><strong>Power Source Device</strong>. The Power Source device specified in Section&nbsp;10, “Power Source Devices.” This can represent either an AC Adapter (on mobile platforms) or a fixed Power Supply.</p></td>
+</tr>
+<tr class="row-even"><td><p>ACPI0004</p></td>
+<td><p><strong>Module Device</strong>. This device is a container object that acts as a bus node in a namespace. A Module Device without any of the _CRS, _PRS and _SRS methods behaves the same way as the Generic Container Devices (PNP0A05 or PNP0A06). If the Module Device contains a _CRS method, only these resources described in the _CRS are available for consumption by its child devices. Also, the Module Device can support _PRS and _SRS methods if _CRS is supported.</p></td>
+</tr>
+<tr class="row-odd"><td><p>ACPI0005</p></td>
+<td><p><strong>SMBus 2.0 Host Controller</strong>. An SMBus host controller (SMB-HC compatible with the embedded controller-based SMB-HC interface
+(see <a class="reference internal" href="../12_ACPI_Embedded_Controller_Interface_Specification/smbus-host-controller-interface-via-embedded-controller.html#smbus-host-controller-interface-via-embedded-controller"><span class="std std-numref">Section 12.9</span></a>), and implementing the SMBus 2.0 Specification.</p></td>
+</tr>
+<tr class="row-even"><td><p>ACPI0006</p></td>
+<td><p><strong>GPE Block Device</strong>. This device allows a system designer to describe GPE blocks beyond the two that are described in the FADT.</p></td>
+</tr>
+<tr class="row-odd"><td><p>ACPI0007</p></td>
+<td><p><strong>Processor Device</strong>. This device provides an alternative to declaring processors using the processor ASL statement. See <a class="reference internal" href="../08_Processor_Configuration_and_Control/declaring-processors.html#declaring-processors"><span class="std std-numref">Section 8.4</span></a> for more details.</p></td>
+</tr>
+<tr class="row-even"><td><p>ACPI0008</p></td>
+<td><p><strong>Ambient Light Sensor Device</strong>. This device is an ambient light sensor. See <a class="reference internal" href="../09_ACPI-Defined_Devices_and_Device-Specific_Objects/ACPIdefined_Devices_and_DeviceSpecificObjects.html#ambient-light-sensor-device"><span class="std std-numref">Section 9.3</span></a>.</p></td>
+</tr>
+<tr class="row-odd"><td><p>ACPI0009</p></td>
+<td><p><strong>I/OxAPIC Device</strong>. This device is an I/O unit that complies with both the APIC and SAPIC interrupt models.</p></td>
+</tr>
+<tr class="row-even"><td><p>ACPI000A</p></td>
+<td><p><strong>I/O APIC Device</strong>. This device is an I/O unit that complies with the APIC interrupt model.</p></td>
+</tr>
+<tr class="row-odd"><td><p>ACPI000B</p></td>
+<td><p><strong>I/O SAPIC Device</strong>. This device is an I/O unit that complies with the SAPIC interrupt model.</p></td>
+</tr>
+<tr class="row-even"><td><p>ACPI000C</p></td>
+<td><p><strong>Processor Aggregator Device</strong>. This device provides a control point for all processors in the platform. See <a class="reference internal" href="../08_Processor_Configuration_and_Control/processor-aggregator-device.html#processor-aggregator-device"><span class="std std-numref">Section 8.5</span></a>.</p></td>
+</tr>
+<tr class="row-odd"><td><p>ACPI000D</p></td>
+<td><p><strong>Power Meter Device</strong>. This device is a power meter. See <a class="reference internal" href="../10_Power_Source_and_Power_Meter_Devices/Power_Source_and_Power_Meter_Devices.html#power-meters"><span class="std std-numref">Section 10.4</span></a>.</p></td>
+</tr>
+<tr class="row-even"><td><p>ACPI000E</p></td>
+<td><p><strong>Time and Alarm Device</strong>. This device is a control method-based real-time clock and wake alarm. See <a class="reference internal" href="../09_ACPI-Defined_Devices_and_Device-Specific_Objects/ACPIdefined_Devices_and_DeviceSpecificObjects.html#time-and-alarm-device"><span class="std std-numref">Section 9.18</span></a>.</p></td>
+</tr>
+<tr class="row-odd"><td><p>ACPI000F</p></td>
+<td><p><strong>User Presence Detection Device</strong>. This device senses user presence (proximity). See <a class="reference internal" href="../09_ACPI-Defined_Devices_and_Device-Specific_Objects/ACPIdefined_Devices_and_DeviceSpecificObjects.html#user-presence-detection-device"><span class="std std-numref">Section 9.16</span></a>)</p></td>
+</tr>
+<tr class="row-even"><td><p>ACPI0010</p></td>
+<td><p><strong>Processor container device</strong>. Used to declare hierarchical processor topologies (see <a class="reference internal" href="../08_Processor_Configuration_and_Control/declaring-processors.html#processor-hierarchy"><span class="std std-numref">Section 8.4.3</span></a>, and <a class="reference internal" href="../08_Processor_Configuration_and_Control/declaring-processors.html#processor-container-device"><span class="std std-numref">Section 8.4.3.1</span></a>).</p></td>
+</tr>
+<tr class="row-odd"><td><p>ACPI0011</p></td>
+<td><p>Generic Buttons Device. This device reports button events corresponding to Human Interface Device (HID) control descriptors (see <a class="reference internal" href="../09_ACPI-Defined_Devices_and_Device-Specific_Objects/ACPIdefined_Devices_and_DeviceSpecificObjects.html#generic-buttons-device"><span class="std std-numref">Section 9.19</span></a>).</p></td>
+</tr>
+<tr class="row-even"><td><p>ACPI0012</p></td>
+<td><p>NVDIMM Root Device. This device contains the NVDIMM devices. See <a class="reference internal" href="../09_ACPI-Defined_Devices_and_Device-Specific_Objects/ACPIdefined_Devices_and_DeviceSpecificObjects.html#nvdimm-devices"><span class="std std-numref">Section 9.20</span></a> and <a class="reference internal" href="#nvdimm-firmware-interface-table-nfit-table"><span class="std std-numref">Table 5.107</span></a>.</p></td>
+</tr>
+<tr class="row-odd"><td><p>ACPI0013</p></td>
+<td><p><strong>Generic Event Device</strong>. This device maps Interrupt-signaled events. See <a class="reference internal" href="#interrupt-signaled-acpi-events"><span class="std std-numref">Section 5.6.9</span></a>.</p></td>
+</tr>
+<tr class="row-even"><td><p>ACPI0014</p></td>
+<td><p><strong>Wireless Power Calibration Device</strong>. This device uses user presence and notification.</p></td>
+</tr>
+<tr class="row-odd"><td><p>ACPI0015</p></td>
+<td><p><strong>USB4 host interface device</strong>. See <a class="reference external" href="http://uefi.org/acpi">Links to ACPI-Related Documents</a> under the heading “USB4 Host Interface Specification”</p></td>
+</tr>
+<tr class="row-even"><td><p>ACPI0016</p></td>
+<td><p><strong>Compute Express Link Host Bridge</strong>. This device is a Compute Express Link Host bridge.</p></td>
+</tr>
+</tbody>
+</table>
