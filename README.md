@@ -4,6 +4,5 @@ This is based on ACPI Spec version 6.4, https://uefi.org/specs/ACPI/6.4/, and th
 
 currently, the auto-complete is not implemented yet.
 
-William.j.wu@intel.com
+William Wu
 
-2021/07/01

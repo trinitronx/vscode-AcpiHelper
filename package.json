@@ -2,7 +2,7 @@
   "name": "acpihelper",
 	"displayName": "AcpiHelper",
 	"description": "Provide ACPI Language Help Info",
-	"version": "0.8.0",
+	"version": "0.9.0",
 	"engines": {
 		"vscode": "^1.54.0"
 	},
