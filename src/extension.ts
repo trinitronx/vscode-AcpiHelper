@@ -2,13 +2,39 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 
+let ExtConfigKey: string[]=[];
+let ExtConfigDesc: string[]=[];
+
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
 	
 	// Use the console to output diagnostic information (console.log) and errors (console.error)
 	// This line of code will only be executed once when your extension is activated
+	//console.log ('Now Lets check the path');
 	console.log('Congratulations, your extension "acpihelper" is now active!');
+	
+	
+	
+		
+			let cfgPath = "C:\\AcpiHelper\\AcpiCfg.json";
+			//console.log(cfgPath);
+			vscode.workspace.openTextDocument(cfgPath).then(document => {
+				let AcpiCfgStr = document.getText();
+				console.log('Parse Ext ACPI Cfg File!');
+				let ParsedResult = JSON.parse(AcpiCfgStr);
+				let KeyNum = Object.keys(ParsedResult).length;
+				//console.log(KeyNum);
+				for (var i = 0; i< KeyNum; i++)
+				{
+					ExtConfigKey.push(ParsedResult[i].KeyWord);
+					ExtConfigDesc.push(ParsedResult[i].Desc);
+						//console.log(ParsedResult[i].KeyWord);
+						//console.log(ParsedResult[i].Desc);
+				}
+
+			});
+	
 
 	// The command has been defined in the package.json file
 	// Now provide the implementation of the command with registerCommand
@@ -18,6 +44,8 @@ export function activate(context: vscode.ExtensionContext) {
 		// Display a message box to the user
 		vscode.window.showInformationMessage('Hello World from AcpiHelper!');
 	});
+  
+	 
 
 	vscode.languages.registerHoverProvider('EASL', {
 		provideHover(document, position, token) {
@@ -30,8 +58,10 @@ export function activate(context: vscode.ExtensionContext) {
 			}
 		}
  	});
+  
+		
 
-
+  
 	context.subscriptions.push(disposable);
 }
 
@@ -943,6 +973,18 @@ function GetPreDefineObjIndex(STxt: string) :string {
 			return "Modems. Note: only generic info was found based on PNP Spec.";
 		}
 	}
+ 
+	for (let IndexVal =0 ; IndexVal < ExtConfigKey.length; IndexVal ++)
+	{
+		if (STxt.toUpperCase() == ExtConfigKey[IndexVal].toUpperCase())
+		{
+			if (ExtConfigDesc.length >= IndexVal)
+			{
+				return ExtConfigDesc[IndexVal];
+			}
+		}
+	}
+	
 
 	
 	return "";
