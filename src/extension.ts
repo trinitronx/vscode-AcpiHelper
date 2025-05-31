@@ -1,6 +1,7 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
+import * as path from 'path';
 
 let ExtConfigKey: string[]=[];
 let ExtConfigDesc: string[]=[];
@@ -8,29 +9,33 @@ let ExtConfigDesc: string[]=[];
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
-	
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
+	let output = vscode.window.createOutputChannel("AcpiHelper");
+	// Use an output channel to output diagnostic information
 	// This line of code will only be executed once when your extension is activated
 	//console.log ('Now Lets check the path');
-	console.log('Congratulations, your extension "acpihelper" is now active!');
+	output.appendLine('Congratulations, your extension "acpihelper" is now active!');
 	
 	
 	
 		
-			let cfgPath = "C:\\AcpiHelper\\AcpiCfg.json";
-			//console.log(cfgPath);
+			//let cfgPath = "C:\\AcpiHelper\\AcpiCfg.json";
+			const config = vscode.workspace.getConfiguration('acpihelper');
+			const extensionDir = context.extensionPath;
+			const cfgPath = config.get('configPath', path.join(extensionDir, 'AcpiCfg.json'));
+
+			output.appendLine('Loading config path: ' + cfgPath);
 			vscode.workspace.openTextDocument(cfgPath).then(document => {
 				let AcpiCfgStr = document.getText();
-				console.log('Parse Ext ACPI Cfg File!');
+        output.appendLine('Parse Ext ACPI Cfg File!');
 				let ParsedResult = JSON.parse(AcpiCfgStr);
 				let KeyNum = Object.keys(ParsedResult).length;
-				//console.log(KeyNum);
+				output.appendLine(KeyNum.toString());
 				for (var i = 0; i< KeyNum; i++)
 				{
 					ExtConfigKey.push(ParsedResult[i].KeyWord);
 					ExtConfigDesc.push(ParsedResult[i].Desc);
-						//console.log(ParsedResult[i].KeyWord);
-						//console.log(ParsedResult[i].Desc);
+						output.appendLine(ParsedResult[i].KeyWord);
+						output.appendLine(ParsedResult[i].Desc);
 				}
 
 			});
