@@ -21,24 +21,45 @@ export function activate(context: vscode.ExtensionContext) {
 			//let cfgPath = "C:\\AcpiHelper\\AcpiCfg.json";
 			const config = vscode.workspace.getConfiguration('acpihelper');
 			const extensionDir = context.extensionPath;
-			const cfgPath = config.get('configPath', path.join(extensionDir, 'AcpiCfg.json'));
+			let cfgPath = config.get('configPath', "");
+			let includeUserConfig = config.get('includeUserConfig', false);
+			let useConfig: boolean = false;
 
-			output.appendLine('Loading config path: ' + cfgPath);
-			vscode.workspace.openTextDocument(cfgPath).then(document => {
-				let AcpiCfgStr = document.getText();
-        output.appendLine('Parse Ext ACPI Cfg File!');
-				let ParsedResult = JSON.parse(AcpiCfgStr);
-				let KeyNum = Object.keys(ParsedResult).length;
-				output.appendLine(KeyNum.toString());
-				for (var i = 0; i< KeyNum; i++)
-				{
-					ExtConfigKey.push(ParsedResult[i].KeyWord);
-					ExtConfigDesc.push(ParsedResult[i].Desc);
+			if (cfgPath === "" && includeUserConfig) {
+				// Config file is explicitly disabled
+				useConfig = false;
+				output.appendLine('Config path disabled.');
+				output.appendLine('Only standard keywords in ACPI specification will be shown.');
+			} else if (cfgPath != "" && includeUserConfig) {
+				// Use user-defined config path
+				useConfig = true;
+				output.appendLine('User-defined config path: ' + cfgPath);
+				output.appendLine('Extra user-defined keywords and those in the ACPI specification will be shown.');
+			} else if (!includeUserConfig) {
+				// Use the default config path
+				useConfig = true;
+				cfgPath = path.join(extensionDir, 'AcpiCfg.json');
+				output.appendLine('Default extension-provided config path: ' + cfgPath);
+				output.appendLine('Extra keywords defined by this extension and those in the ACPI specification will be shown.');
+			}
+			if (useConfig === true) {
+				output.appendLine('Loading config path: ' + cfgPath);
+				vscode.workspace.openTextDocument(cfgPath).then(document => {
+					let AcpiCfgStr = document.getText();
+					output.appendLine('Parse Ext ACPI Cfg File!');
+					let ParsedResult = JSON.parse(AcpiCfgStr);
+					let KeyNum = Object.keys(ParsedResult).length;
+					output.appendLine(KeyNum.toString());
+					for (var i = 0; i< KeyNum; i++)
+					{
+						ExtConfigKey.push(ParsedResult[i].KeyWord);
+						ExtConfigDesc.push(ParsedResult[i].Desc);
 						output.appendLine(ParsedResult[i].KeyWord);
 						output.appendLine(ParsedResult[i].Desc);
-				}
+					}
 
-			});
+				});
+			}
 	
 
 	// The command has been defined in the package.json file
