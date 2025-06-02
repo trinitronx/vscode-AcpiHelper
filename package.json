@@ -1,92 +1,93 @@
 {
   "name": "acpihelper",
-	"displayName": "AcpiHelper",
-	"description": "Provide ACPI Language Help Info",
-	"version": "1.0.0",
-	"icon": "Logo.png",
-	"engines": {
-		"vscode": "^1.54.0"
-	},
-	"categories": [
-		"Other"
-	],
-	"activationEvents": [
-        "onCommand:acpihelper.HelpInfo",
-		"onLanguage:EASL"
-	],
-	"capabilities": {
-		"hoverProvider":"true"
-	},
-	"publisher": "WilliamWu-HJ",
-	"main": "./out/extension.js",
-	"repository": {
-		"type": "git",
-		"url": "https://WilliamSuper@dev.azure.com/WilliamSuper/AcpiHelper/_git/AcpiHelper"
-	},
-	"contributes": {
-		"commands": [
-			{
-				"command": "acpihelper.HelpInfo",
-				"title": "Help"
-			}
-		],
-		"configuration": {
-			"title": "Acpi Helper Extension",
-			"type": "object",
-			"properties": {
-				"acpihelper.includeUserConfig": {
-					"type": "boolean",
-					"default": false,
-					"description": "Include the extra ACPI keywords & descriptions from a user-provided JSON config file, specified by the configPath setting. If false, the included settings from this extension will be used. (\"AcpiCfg.json\" in the extension directory)"
-				},
-				"acpihelper.configPath": {
-					"type": "string",
-					"default": "",
-					"description": "Absolute path to a JSON config file containing extra ACPI ASL keyword descriptions. If not set (empty string) and includeUserConfig is true, the default \"AcpiCfg.json\" bundled with this extension will not be used. This is useful to only display help for standard keywords specified by the ACPI spec."
-				}
-			}
-		},
-		"languages": [
-			{
-				"id": "EASL",
-				"aliases": [
-					"asl"
-				],
-				"extensions": [
-					".asl",
-					".act",
-					".iii"
-				],
-				"configuration": "./language-configuration.json"
-			}
-		],
-		"grammars": [
-			{
-				"language": "EASL",
-				"scopeName": "source.asl",
-				"path": "./syntaxes/asl.tmLanguage.json"
-			}
-		]
-	},
-	"scripts": {
-		"vscode:prepublish": "npm run compile",
-		"compile": "tsc -p ./",
-		"watch": "tsc -watch -p ./",
-		"pretest": "npm run compile && npm run lint",
-		"lint": "eslint src --ext ts",
-		"test": "node ./out/test/runTest.js"
-	},
-	"devDependencies": {
-		"@types/vscode": "^1.54.0",
-		"@types/glob": "^7.1.3",
-		"@types/mocha": "^8.2.2",
-		"@types/node": "14.x",
-		"eslint": "^7.27.0",
-		"@typescript-eslint/eslint-plugin": "^4.26.0",
-		"@typescript-eslint/parser": "^4.26.0",
-		"glob": "^7.1.7",
-		"mocha": "^8.4.0",
-		"typescript": "^4.3.2",
-		"@vscode/test-electron": "^2.5.2"
-	}
+  "displayName": "AcpiHelper",
+  "description": "Provide ACPI Language Help Info",
+  "version": "1.0.0",
+  "icon": "Logo.png",
+  "engines": {
+    "vscode": "^1.54.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onCommand:acpihelper.HelpInfo",
+    "onLanguage:EASL"
+  ],
+  "capabilities": {
+    "hoverProvider": "true"
+  },
+  "publisher": "WilliamWu-HJ",
+  "main": "./out/extension.js",
+  "repository": {
+    "type": "git",
+    "url": "https://WilliamSuper@dev.azure.com/WilliamSuper/AcpiHelper/_git/AcpiHelper"
+  },
+  "contributes": {
+    "commands": [
+      {
+        "command": "acpihelper.HelpInfo",
+        "title": "Help"
+      }
+    ],
+    "configuration": {
+      "title": "Acpi Helper Extension",
+      "type": "object",
+      "properties": {
+        "acpihelper.includeUserConfig": {
+          "type": "boolean",
+          "default": false,
+          "description": "Include the extra ACPI keywords & descriptions from a user-provided JSON config file, specified by the configPath setting. If false, the included settings from this extension will be used. (\"AcpiCfg.json\" in the extension directory)"
+        },
+        "acpihelper.configPath": {
+          "type": "string",
+          "default": "",
+          "description": "Absolute path to a JSON config file containing extra ACPI ASL keyword descriptions. If not set (empty string) and includeUserConfig is true, the default \"AcpiCfg.json\" bundled with this extension will not be used. This is useful to only display help for standard keywords specified by the ACPI spec."
+        }
+      }
+    },
+    "languages": [
+      {
+        "id": "EASL",
+        "aliases": [
+          "asl"
+        ],
+        "extensions": [
+          ".asl",
+          ".act",
+          ".iii"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "EASL",
+        "scopeName": "source.asl",
+        "path": "./syntaxes/asl.tmLanguage.json"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src --ext ts",
+    "test": "node ./out/test/runTest.js"
+  },
+  "devDependencies": {
+    "@stylistic/eslint-plugin": "^4.4.0",
+    "@stylistic/eslint-plugin-ts": "^4.4.0",
+    "@typescript-eslint/eslint-plugin": "^8.33.0",
+    "@types/glob": "^7.1.3",
+    "@types/mocha": "^8.2.2",
+    "@types/node": "14.x",
+    "@types/vscode": "^1.54.0",
+    "@vscode/test-electron": "^2.5.2",
+    "eslint": "^9.28.0",
+    "glob": "^7.1.7",
+    "mocha": "^8.4.0",
+    "typescript": "^4.3.2"
+  }
 }
