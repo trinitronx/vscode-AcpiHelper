@@ -1,39 +1,29 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
+import * as path from 'path';
 
 let ExtConfigKey: string[]=[];
 let ExtConfigDesc: string[]=[];
+let output: vscode.OutputChannel;
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
-	
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
+	output = vscode.window.createOutputChannel("AcpiHelper");
+	// Use an output channel to output diagnostic information
 	// This line of code will only be executed once when your extension is activated
 	//console.log ('Now Lets check the path');
-	console.log('Congratulations, your extension "acpihelper" is now active!');
+	output.appendLine('Congratulations, your extension "acpihelper" is now active!');
 	
 	
-	
-		
-			let cfgPath = "C:\\AcpiHelper\\AcpiCfg.json";
-			//console.log(cfgPath);
-			vscode.workspace.openTextDocument(cfgPath).then(document => {
-				let AcpiCfgStr = document.getText();
-				console.log('Parse Ext ACPI Cfg File!');
-				let ParsedResult = JSON.parse(AcpiCfgStr);
-				let KeyNum = Object.keys(ParsedResult).length;
-				//console.log(KeyNum);
-				for (var i = 0; i< KeyNum; i++)
-				{
-					ExtConfigKey.push(ParsedResult[i].KeyWord);
-					ExtConfigDesc.push(ParsedResult[i].Desc);
-						//console.log(ParsedResult[i].KeyWord);
-						//console.log(ParsedResult[i].Desc);
-				}
-
-			});
+	// Load the config file once during activation
+	loadConfig(context);
+	// Handle configuration changes
+	vscode.workspace.onDidChangeConfiguration(event => {
+		// Handle configuration changes
+		handleConfigChange(event, context);
+	});
 	
 
 	// The command has been defined in the package.json file
@@ -63,6 +53,63 @@ export function activate(context: vscode.ExtensionContext) {
 
   
 	context.subscriptions.push(disposable);
+}
+
+// Load or reload the extension config
+function loadConfig(context: vscode.ExtensionContext) {
+	const config = vscode.workspace.getConfiguration('acpihelper');
+	const extensionDir = context.extensionPath;
+	let cfgPath = config.get('configPath', "");
+	let includeUserConfig = config.get('includeUserConfig', false);
+	let useConfig: boolean = false;
+
+	// Reset the external config keywords and descriptions
+	ExtConfigKey = [];
+	ExtConfigDesc = [];
+
+	if (cfgPath === "" && includeUserConfig) {
+		// Config file is explicitly disabled
+		useConfig = false;
+		output.appendLine('Config path disabled.');
+		output.appendLine('Only standard keywords in ACPI specification will be shown.');
+	} else if (cfgPath != "" && includeUserConfig) {
+		// Use user-defined config path
+		useConfig = true;
+		output.appendLine('User-defined config path: ' + cfgPath);
+		output.appendLine('Extra user-defined keywords and those in the ACPI specification will be shown.');
+	} else if (!includeUserConfig) {
+		// Use the default config path
+		useConfig = true;
+		cfgPath = path.join(extensionDir, 'AcpiCfg.json');
+		output.appendLine('Default extension-provided config path: ' + cfgPath);
+		output.appendLine('Extra keywords defined by this extension and those in the ACPI specification will be shown.');
+	}
+	if (useConfig === true) {
+		output.appendLine('Loading config path: ' + cfgPath);
+		vscode.workspace.openTextDocument(cfgPath).then(document => {
+			let AcpiCfgStr = document.getText();
+			output.appendLine('Parse Ext ACPI Cfg File!');
+			let ParsedResult = JSON.parse(AcpiCfgStr);
+			let KeyNum = Object.keys(ParsedResult).length;
+			output.appendLine(KeyNum.toString());
+			for (var i = 0; i< KeyNum; i++)
+			{
+				ExtConfigKey.push(ParsedResult[i].KeyWord);
+				ExtConfigDesc.push(ParsedResult[i].Desc);
+				output.appendLine(ParsedResult[i].KeyWord);
+				output.appendLine(ParsedResult[i].Desc);
+			}
+
+		});
+	}
+}
+
+// Event handler for configuration changes
+function handleConfigChange(event: vscode.ConfigurationChangeEvent, context: vscode.ExtensionContext) {
+	if (event.affectsConfiguration('acpihelper')) {
+		// Configuration related to this extension has changed
+		loadConfig(context);
+	}
 }
 
 function GetPreDefineObjIndex(STxt: string) :string {

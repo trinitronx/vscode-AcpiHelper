@@ -1,0 +1,22 @@
+[
+  {
+    "KeyWord": "ECRD",
+    "Desc": "EC Read"
+  },
+  {
+    "KeyWord": "ALSD",
+    "Desc": "ALS Sensors Device"
+  },
+  {
+    "KeyWord": "WFRK",
+    "Desc": "WIFI RF Kill Pin Set"
+  },
+  {
+    "KeyWord": "BTRK",
+    "Desc": "BT RF Kill Pin Set"
+  },
+  {
+    "KeyWord": "GBTR",
+    "Desc": "Get BT RF Kill Pin Value"
+  }
+]

@@ -30,6 +30,22 @@
 				"title": "Help"
 			}
 		],
+		"configuration": {
+			"title": "Acpi Helper Extension",
+			"type": "object",
+			"properties": {
+				"acpihelper.includeUserConfig": {
+					"type": "boolean",
+					"default": false,
+					"description": "Include the extra ACPI keywords & descriptions from a user-provided JSON config file, specified by the configPath setting. If false, the included settings from this extension will be used. (\"AcpiCfg.json\" in the extension directory)"
+				},
+				"acpihelper.configPath": {
+					"type": "string",
+					"default": "",
+					"description": "Absolute path to a JSON config file containing extra ACPI ASL keyword descriptions. If not set (empty string) and includeUserConfig is true, the default \"AcpiCfg.json\" bundled with this extension will not be used. This is useful to only display help for standard keywords specified by the ACPI spec."
+				}
+			}
+		},
 		"languages": [
 			{
 				"id": "EASL",
