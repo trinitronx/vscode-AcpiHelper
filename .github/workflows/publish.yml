@@ -1,0 +1,19 @@
+name: Publish to marketplace
+
+on:
+    release:
+        types: [published]
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v1
+            - name: Build App
+              run: npm install --omit=dev
+            - name: Build App
+              run: npm run vscode:prepublish
+            - name: Publish to marketplace
+              run: |
+                  vsce package
+                  vsce publish --pat "${{secrets.VSCODE_PUBLISH_KEY}}"
