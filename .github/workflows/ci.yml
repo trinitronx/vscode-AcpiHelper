@@ -31,14 +31,18 @@ jobs:
         run: pnpm install
       - name: Install Xvfb
         run: sudo apt-get update && sudo apt-get install -y xvfb
+        if: ${{ runner.os == 'Linux' }}
       - name: Compile & Lint
         run: pnpm run pretest
       - name: Launch Xvfb
         run: |
           export DISPLAY=:99.0
           Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
+        if: ${{ runner.os == 'Linux' }}
       - name: Run tests
         run: pnpm run test
+        env:
+          DISPLAY: ${{ runner.os == 'Linux' && ':99.0' || '' }}
       - name: Check for vsce
         run: which vsce || echo "vsce not found"
         if: ${{ env.debug_ci == 'true' }}
