@@ -9,14 +9,9 @@ import { ConfigManager } from '../../lib/configmanager';
 import rewire = require("rewire");
 let acpihelper = rewire("../../extension");
 
-// const getTestConfig = acpihelper.getTestConfig;
-// if (!getTestConfig) {
-//     throw new Error('Test config not available');
-// }
 let mockOutputChannel: sinon.SinonStubbedInstance<vscode.OutputChannel>;
 let mockLogOutputChannel: sinon.SinonStubbedInstance<vscode.LogOutputChannel>;
 
-// const { ExtConfigKey, ExtConfigDesc } = config;
 suite('Extension Test Suite', function (this: Mocha.Suite) {
 	// TODO: Remove Debug timeout
 	this.timeout(30000);
@@ -24,25 +19,15 @@ suite('Extension Test Suite', function (this: Mocha.Suite) {
     // let outputChannel: vscode.OutputChannel;
 	let testOutput: string[] = [];
 	let sandbox: sinon.SinonSandbox;
-	// let configSpy: sinon.SinonSpy;
-	
-	let extensionConfigManager: ConfigManager;
-	// let ExtConfigKey: string[] = ['FOO'];
-	// let ExtConfigDesc: string[] = ['Will it Foo?'];
+	let configManager: ConfigManager;
 
 	suiteSetup(() => {
 		console.log('Setting up test suite...');
 		const extension = vscode.extensions.getExtension('WilliamWu-HJ.acpihelper');
 		console.log('Before rewire: Is extension active:', extension?.isActive);
-		// extensionConfigManager = extension?.exports.__get__('configManager');
+		configManager = extension?.exports.__get__('configManager');
 
 		// Log the initial state of the arrays in the extension
-		// console.log('Initial extension arrays:', {
-		// 	ExtConfigKey: acpihelper.__get__('ExtConfigKey'),
-		// 	ExtConfigDesc: acpihelper.__get__('ExtConfigDesc')
-		// });
-		// let configManager = acpihelper.__get__('configManager');
-		let configManager = acpihelper.configManager;
 		console.log('Initial extension arrays:', {
 			configKey: configManager.configKey,
 			configDesc: configManager.configDesc,
@@ -50,22 +35,7 @@ suite('Extension Test Suite', function (this: Mocha.Suite) {
 			// "extensionConfigManager.configDesc": extensionConfigManager.configDesc
 		});
 
-		// Rewire the global external config arrays with our own
-		// acpihelper.__set__({
-			// ExtConfigKey: ExtConfigKey,
-			// ExtConfigDesc: ExtConfigDesc
-		// });
-
-		// Log the state after rewiring
-		// console.log('Arrays after rewiring:', {
-		// 	ExtConfigKey: acpihelper.__get__('ExtConfigKey'),
-		// 	ExtConfigDesc: acpihelper.__get__('ExtConfigDesc')
-		// });
-		// console.log('After rewire: Is extension active:', extension?.isActive);
-
 		sandbox = sinon.createSandbox();
-
-		// configSpy = sandbox.spy(acpihelper, 'getTestConfig');
 
 		// Create a mock output channel object
 		mockOutputChannel = {
@@ -235,14 +205,6 @@ suite('Extension Test Suite', function (this: Mocha.Suite) {
 				}
 			);
 
-			// Gather results
-			// let resultingExtConfig = getTestConfig();
-			// let ExtConfigKey = resultingExtConfig?.ExtConfigKey!;
-			// let ExtConfigDesc = resultingExtConfig?.ExtConfigDesc!;
-
-			// Verify arrays are empty (only built-in keywords)
-			// assert.strictEqual(ExtConfigKey.length, 0);
-			// assert.strictEqual(ExtConfigDesc.length, 0);
 		} catch (error) {
 			console.error('Test failed:', error);
 			throw error;
@@ -255,19 +217,12 @@ suite('Extension Test Suite', function (this: Mocha.Suite) {
 		console.log('Beginning of test(\'User-defined config path\'): Is extension active:', extension?.isActive);
 		assert.ok(extension.isActive, 'Extension should be active');
 		
-		// const thisConfigManager = extension.exports.configManager;
 		console.log("Extension exports: ", extension.exports);
 		const thisConfigManager = extension.exports.configManager;
 		assert.ok(thisConfigManager, 'configManager should be exported');
 		console.log('thisConfigManager instance ID:', thisConfigManager);
 		console.log('thisConfigManager constructor:', thisConfigManager.constructor.name);
 
-		// Log the state after rewiring but before the config reload
-		// console.log('Arrays after rewiring:', {
-		// 	ExtConfigKey: acpihelper.__get__('ExtConfigKey'),
-		// 	ExtConfigDesc: acpihelper.__get__('ExtConfigDesc')
-		// });
-	    
 	    // Log the actual module instance
 	    console.log('acpihelper module:', acpihelper);
 
@@ -289,9 +244,6 @@ suite('Extension Test Suite', function (this: Mocha.Suite) {
 			configManager.constructor === thisConfigManager.constructor);
 		// assert.strictEqual(configManager, thisConfigManager, 'Should be the same ConfigManager instance');
 		assert.notStrictEqual(configManager, thisConfigManager, 'These are NOT the same ConfigManager instance');
-		// Get the current state using the public getters
-		// let configKey = configManager.configKey;
-		// let configDesc = configManager.configDesc;
 		console.log('Before user-defined config reload: configKey = ', configManager.configKey);
 		console.log('Before user-defined config reload: configDesc = ', configManager.configDesc);
 
@@ -349,12 +301,6 @@ suite('Extension Test Suite', function (this: Mocha.Suite) {
 			appendLineCalls: mockOutputChannel.appendLine.getCalls().map(call => call.args)
 		});
 
-		// Log the arrays state after settings reload 
-		// console.log('Arrays after config load:', {
-			// ExtConfigKey: acpihelper.__get__('ExtConfigKey'),
-			// ExtConfigDesc: acpihelper.__get__('ExtConfigDesc')
-		// });
-		// configManager = acpihelper.__get__('configManager');
 		// Get the instance after config reload
 		const sameConfigManager = acpihelper.configManager;
 		console.log('Second configManager instance ID:', sameConfigManager);
@@ -366,8 +312,6 @@ suite('Extension Test Suite', function (this: Mocha.Suite) {
 			configManager.constructor === sameConfigManager.constructor);
 		assert.strictEqual(configManager, sameConfigManager, 'Should be the same ConfigManager instance');
 
-		// configKey = sameConfigManager.configKey;
-		// configDesc = sameConfigManager.configDesc;
 		console.log('thisConfigManager Arrays after config load:', {
 			configKey: thisConfigManager.configKey,
 			configDesc: thisConfigManager.configDesc
@@ -390,9 +334,6 @@ suite('Extension Test Suite', function (this: Mocha.Suite) {
 		assert.strictEqual(thisConfigManager.configDesc.length, 6);
 		assert.strictEqual(thisConfigManager.configKey[0], 'CUST');
 		assert.strictEqual(thisConfigManager.configDesc[0], 'CUSTOM Keyword Test');
-        // assert.strictEqual(ExtConfigDesc.length, 6);
-        // assert.strictEqual(ExtConfigKey[0], 'CUST');
-		// assert.strictEqual(ExtConfigDesc[0], 'CUSTOM Keyword Test');
 		
 		// Verify that test arrays contain the entire expected values
 		// TODO
@@ -425,12 +366,7 @@ suite('Extension Test Suite', function (this: Mocha.Suite) {
         // assert.ok(testOutput.some(line => line.includes('Extra keywords defined by this extension')));
 
 		// Gather results
-		// let resultingExtConfig = getTestConfig();
-		// let ExtConfigKey = resultingExtConfig?.ExtConfigKey!;
-		// let ExtConfigDesc = resultingExtConfig?.ExtConfigDesc!;
-
 		// Verify arrays contain default config data
-        // assert.ok(ExtConfigKey.length > 0);
-        // assert.ok(ExtConfigDesc.length > 0);
+		// TODO
     });
 });
