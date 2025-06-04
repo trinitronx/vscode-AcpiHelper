@@ -11,6 +11,35 @@ let acpihelper = rewire("../../extension");
 let mockOutputChannel: sinon.SinonStubbedInstance<vscode.OutputChannel>;
 let mockLogOutputChannel: sinon.SinonStubbedInstance<vscode.LogOutputChannel>;
 
+/**
+ * Waits for the config to finish loading by monitoring the output channel.
+ *
+ * Creates and returns a Promise that resolves when the
+ * "Finished loading config!" message is logged to the output channel.
+ *
+ * @param timeout - Maximum time to wait in milliseconds (default: 5000)
+ * @returns Promise that resolves when config is loaded or rejects on timeout
+ */
+function whenConfigLoaded(timeout: number = 2000) {
+    return new Promise<void>((resolve, reject) => {
+        const startTime = Date.now();
+        const checkForMessage = () => {
+            if (Date.now() - startTime > timeout) {
+                reject(new Error('Timeout waiting for config to load'));
+                return;
+            }
+            // Check for only the most recent calls
+            const recentCalls = mockOutputChannel.appendLine.getCalls().slice(-3);
+            if (recentCalls.some(call => call.args[0] === 'Finished loading config!')) {
+                resolve();
+            } else {
+                setTimeout(checkForMessage, 100);
+            }
+        };
+        checkForMessage();
+    });
+}
+
 suite('Extension Test Suite', function (this: Mocha.Suite) {
     // TODO: Remove Debug timeout
     // this.timeout(30000);
@@ -218,18 +247,7 @@ suite('Extension Test Suite', function (this: Mocha.Suite) {
         });
 
         // Create a promise that resolves when the "Finished loading config!" message is logged
-        const configLoadedPromise = new Promise<void>((resolve) => {
-            const checkForMessage = () => {
-                // Check for only the most recent calls
-                const recentCalls = mockOutputChannel.appendLine.getCalls().slice(-3);
-                if (recentCalls.some(call => call.args[0] === 'Finished loading config!')) {
-                    resolve();
-                } else {
-                    setTimeout(checkForMessage, 100);
-                }
-            };
-            checkForMessage();
-        });
+        const configLoadedPromise = whenConfigLoaded();
 
         // Set config to use test fixture
         // (Triggers automatic config reload)
