@@ -14,7 +14,7 @@ let mockLogOutputChannel: sinon.SinonStubbedInstance<vscode.LogOutputChannel>;
 
 suite('Extension Test Suite', function (this: Mocha.Suite) {
 	// TODO: Remove Debug timeout
-	this.timeout(30000);
+	// this.timeout(30000);
 
     // let outputChannel: vscode.OutputChannel;
 	let testOutput: string[] = [];
@@ -189,7 +189,7 @@ suite('Extension Test Suite', function (this: Mocha.Suite) {
 
 			// Add a small delay to allow output to be captured
 			// await new Promise(resolve => setTimeout(resolve, 30000));
-			await new Promise(resolve => setTimeout(resolve, 1000));
+			// await new Promise(resolve => setTimeout(resolve, 1000));
 
 			// Add debug logging for mock state after reload
 			// console.log('Mock state after reload:', {
@@ -328,9 +328,6 @@ suite('Extension Test Suite', function (this: Mocha.Suite) {
 			}
 		);
 
-		// Add a small delay to see if the extension is activated
-		console.log('Waiting 3 seconds before checking arrays...');
-		await new Promise(resolve => setTimeout(resolve, 3000));
 
 		// Verify arrays contain unique test fixture data
 		assert.strictEqual(thisConfigManager.configDesc.length, 6);
