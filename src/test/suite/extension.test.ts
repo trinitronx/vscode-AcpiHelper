@@ -15,8 +15,6 @@ suite('Extension Test Suite', function (this: Mocha.Suite) {
     // TODO: Remove Debug timeout
     // this.timeout(30000);
 
-    // let outputChannel: vscode.OutputChannel;
-    let testOutput: string[] = [];
     let sandbox: sinon.SinonSandbox;
     const extension = vscode.extensions.getExtension('WilliamWu-HJ.acpihelper');
 
@@ -92,9 +90,8 @@ suite('Extension Test Suite', function (this: Mocha.Suite) {
 
     setup(function setupHook() {
         // Reset the outputChannel mocks before each test
-        // mockOutputChannel.appendLine.resetHistory();
-        // mockLogOutputChannel.appendLine.resetHistory();
-        testOutput = [];
+        mockOutputChannel.appendLine.resetHistory();
+        mockLogOutputChannel.appendLine.resetHistory();
     });
 
     teardown(() => {
@@ -173,16 +170,11 @@ suite('Extension Test Suite', function (this: Mocha.Suite) {
             await vscode.workspace.getConfiguration('acpihelper').update('configPath', '', true);
             await vscode.workspace.getConfiguration('acpihelper').update('includeUserConfig', true, true);
 
-            // Clear previous output
-            testOutput = [];
-
             await vscode.commands.executeCommand('workbench.panel.output.focus');
 
             // Add a small delay to allow output to be captured
             // await new Promise(resolve => setTimeout(resolve, 30000));
             // await new Promise(resolve => setTimeout(resolve, 1000));
-
-            console.log('After reload, testOutput:', testOutput); // TODO: Remove Debug log
 
             // Verify output messages
             assert.ok(mockOutputChannel.appendLine.called, 'appendLine should have been called');
@@ -249,9 +241,6 @@ suite('Extension Test Suite', function (this: Mocha.Suite) {
         await vscode.workspace.getConfiguration('acpihelper').update('configPath', testConfigPath, true);
         await vscode.workspace.getConfiguration('acpihelper').update('includeUserConfig', true, true);
 
-        // Clear previous output
-        testOutput = [];
-
         // Wait for the config to finish loading, and for result arrays to be populated
         await configLoadedPromise;
 
@@ -290,9 +279,6 @@ suite('Extension Test Suite', function (this: Mocha.Suite) {
         // Set config to use default path
         await vscode.workspace.getConfiguration('acpihelper').update('configPath', '', true);
         await vscode.workspace.getConfiguration('acpihelper').update('includeUserConfig', false, true);
-
-        // Clear previous output
-        testOutput = [];
 
         // Verify output messages
         [sinon.match((arg: string) => arg.startsWith('Default extension-provided config path')),
