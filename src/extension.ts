@@ -128,7 +128,7 @@ function handleConfigChange(event: vscode.ConfigurationChangeEvent, context: vsc
 }
 
 function GetPreDefineObjIndex(STxt: string) :string {
-    let PreDefineName: string[] = [
+    const PRE_DEFINE_NAME: string[] = [
         "_ACx", "_ADR", "_AEI", "_ALC", 
         "_ALI", "_ALN", "_ALP", "_ALR", 
         "_ALT", "_ALx", "_ART", "_ASI", 
@@ -375,7 +375,7 @@ function GetPreDefineObjIndex(STxt: string) :string {
         "PNPC001"
     ];
 
-    let PreDefNameHelpStr: string[] = [
+    const PRE_DEF_NAME_HELP_STR: string[] = [
         "Active Cooling – returns the active cooling policy threshold values.", 
         "Address: (1) returns the address of a device on its parent bus. (2) returns a unique ID for the display output device. (3) resource descriptor field.", 
         "Designates those GPIO interrupts that shall be handled by OSPM as ACPI events.", 
@@ -1002,13 +1002,13 @@ function GetPreDefineObjIndex(STxt: string) :string {
         "Compaq 14400 modem (TBD)", 
         "Compaq 2400/9600 modem (TBD)"
     ];
-    for (let IndexVal =0 ; IndexVal < PreDefineName.length; IndexVal ++)
+    for (let IndexVal =0 ; IndexVal < PRE_DEFINE_NAME.length; IndexVal ++)
     {
-        if (STxt.toUpperCase() === PreDefineName[IndexVal].toUpperCase())
+        if (STxt.toUpperCase() === PRE_DEFINE_NAME[IndexVal].toUpperCase())
         {
-            if (PreDefNameHelpStr.length >= IndexVal)
+            if (PRE_DEF_NAME_HELP_STR.length >= IndexVal)
             {
-                return PreDefNameHelpStr[IndexVal];
+                return PRE_DEF_NAME_HELP_STR[IndexVal];
             }
         }
     }
