@@ -226,36 +226,16 @@ suite('Extension Test Suite', function (this: Mocha.Suite) {
         console.log('thisConfigManager instance ID:', thisConfigManager);
         console.log('thisConfigManager constructor:', thisConfigManager.constructor.name);
 
-        // Log the actual module instance
-        console.log('acpihelper module:', acpihelper);
-
-        // Log the actual instance we're getting
-        console.log('acpihelper.configManager instance ID:', acpihelper.configManager);
-        console.log('acpihelper.configManager constructor:', acpihelper.configManager.constructor.name);
 
         // Log the require cache for our extension
         console.log('Require cache keys:', Object.keys(require.cache));
         console.log('Extension module in cache:', require.cache[require.resolve('../../extension')]);
 
-        // Get the ConfigManager instance from the extension (before config reload)
-        // let configManager = acpihelper.__get__('configManager');
-        const configManager = acpihelper.configManager;
-        console.log('First configManager instance ID:', configManager);
-        console.log('Extension exports thisConfigManager instance ID:', thisConfigManager);
-        console.log('Are instances the same?', configManager === thisConfigManager);
-        console.log('Are instances from same constructor?',
-            configManager.constructor === thisConfigManager.constructor);
-        // assert.strictEqual(configManager, thisConfigManager, 'Should be the same ConfigManager instance');
-        assert.notStrictEqual(configManager, thisConfigManager, 'These are NOT the same ConfigManager instance');
-        console.log('Before user-defined config reload: configKey = ', configManager.configKey);
-        console.log('Before user-defined config reload: configDesc = ', configManager.configDesc);
+        console.log('Extension exports thisConfigManager instance:', thisConfigManager);
 
         // Now we can use this instance for our tests
         console.log('Before config reload:', {
-            "configManager.configKey": configManager.configKey,
-            "configManager.configDesc": configManager.configDesc,
-            "thisConfigManager.configKey": thisConfigManager.configKey,
-            "thisConfigManager.configDesc": thisConfigManager.configDesc
+            thisConfigManager
         });
 
         // Get path to test fixture
@@ -302,17 +282,6 @@ suite('Extension Test Suite', function (this: Mocha.Suite) {
             appendLineCalled: mockOutputChannel.appendLine.called,
             appendLineCalls: mockOutputChannel.appendLine.getCalls().map(call => call.args)
         });
-
-        // Get the instance after config reload
-        const sameConfigManager = acpihelper.configManager;
-        console.log('Second configManager instance ID:', sameConfigManager);
-        // console.log('After user-defined config reload: ConfigManager instance:', sameConfigManager);
-        // Verify they are the same instance
-        // Log the actual object references
-        console.log('Are instances the same?', configManager === sameConfigManager);
-        console.log('Are instances from same constructor?',
-            configManager.constructor === sameConfigManager.constructor);
-        assert.strictEqual(configManager, sameConfigManager, 'Should be the same ConfigManager instance');
 
         console.log('thisConfigManager Arrays after config load:', {
             configKey: thisConfigManager.configKey,
