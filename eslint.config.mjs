@@ -18,7 +18,7 @@ export default defineConfig([globalIgnores(["**/out", "**/dist", "**/*.d.ts"]), 
     rules: {
         "@typescript-eslint/naming-convention": "warn",
         "@stylistic/semi": "error",
-        '@stylistic/indent': ["warn", "tab"],
+        '@stylistic/indent': ["warn", 4],
         curly: "warn",
         eqeqeq: "warn",
         "no-throw-literal": "warn",
