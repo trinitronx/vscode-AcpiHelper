@@ -169,29 +169,18 @@ suite('Extension Test Suite', function (this: Mocha.Suite) {
             // });
 
             // Set config to disabled state
+            // (Triggers automatic config reload)
             await vscode.workspace.getConfiguration('acpihelper').update('configPath', '', true);
             await vscode.workspace.getConfiguration('acpihelper').update('includeUserConfig', true, true);
 
             // Clear previous output
             testOutput = [];
-            // console.log('Initial testOutput:', testOutput); // TODO: Remove Debug log
 
-            // Trigger config reload
-            // await vscode.commands.executeCommand('workbench.action.reloadWindow');
-            // outputChannel.show();
-            // await vscode.commands.executeCommand('workbench.action.openView', 'Output');
             await vscode.commands.executeCommand('workbench.panel.output.focus');
-            await vscode.commands.executeCommand('acpihelper.reloadConfig');
 
             // Add a small delay to allow output to be captured
             // await new Promise(resolve => setTimeout(resolve, 30000));
             // await new Promise(resolve => setTimeout(resolve, 1000));
-
-            // Add debug logging for mock state after reload
-            // console.log('Mock state after reload:', {
-            // 	appendLineCalled: mockOutputChannel.appendLine.called,
-            // 	appendLineCalls: mockOutputChannel.appendLine.getCalls().map(call => call.args)
-            // });
 
             console.log('After reload, testOutput:', testOutput); // TODO: Remove Debug log
 
@@ -222,10 +211,6 @@ suite('Extension Test Suite', function (this: Mocha.Suite) {
         console.log('configManager instance:', configManager);
         console.log('configManager constructor:', configManager.constructor.name);
 
-
-        // Log the require cache for our extension
-        // console.log('Require cache keys:', Object.keys(require.cache));
-        // console.log('Extension module in cache:', require.cache[require.resolve('../../extension')]);
 
         console.log('extension.exports configManager instance:', configManager);
 
@@ -260,15 +245,12 @@ suite('Extension Test Suite', function (this: Mocha.Suite) {
         });
 
         // Set config to use test fixture
+        // (Triggers automatic config reload)
         await vscode.workspace.getConfiguration('acpihelper').update('configPath', testConfigPath, true);
         await vscode.workspace.getConfiguration('acpihelper').update('includeUserConfig', true, true);
 
         // Clear previous output
         testOutput = [];
-
-        // Trigger config reload
-        // await vscode.commands.executeCommand('workbench.action.reloadWindow');
-        // await vscode.commands.executeCommand('acpihelper.reloadConfig');
 
         // Wait for the config to finish loading, and for result arrays to be populated
         await configLoadedPromise;
@@ -312,10 +294,6 @@ suite('Extension Test Suite', function (this: Mocha.Suite) {
         // Clear previous output
         testOutput = [];
 
-        // Trigger config reload
-        // await vscode.commands.executeCommand('workbench.action.reloadWindow');
-        await vscode.commands.executeCommand('acpihelper.reloadConfig');
-
         // Verify output messages
         [sinon.match((arg: string) => arg.startsWith('Default extension-provided config path')),
             'Extra keywords defined by this extension and those in the ACPI specification will be shown.'].forEach(
@@ -324,10 +302,6 @@ suite('Extension Test Suite', function (this: Mocha.Suite) {
                     `Expected '${expectedMessage}' message, got calls: ${JSON.stringify(mockOutputChannel.appendLine.getCalls().map(call => call.args))}`);
             }
         );
-
-        // TODO: Remove old broken assertions
-        // assert.ok(testOutput.some(line => line.includes('Default extension-provided config path')));
-        // assert.ok(testOutput.some(line => line.includes('Extra keywords defined by this extension')));
 
         // Gather results
         // Verify arrays contain default config data
