@@ -5,26 +5,65 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as sinon from 'sinon';
 import * as vscode from 'vscode';
-import { ConfigManager } from '../../lib/configmanager';
 import rewire = require("rewire");
 let acpihelper = rewire("../../extension");
 
+let debugCI: boolean = false; // set env var DEBUG_CI=true to turn on
 let mockOutputChannel: sinon.SinonStubbedInstance<vscode.OutputChannel>;
 let mockLogOutputChannel: sinon.SinonStubbedInstance<vscode.LogOutputChannel>;
+
+/**
+ * Waits for the config to finish loading by monitoring the output channel.
+ *
+ * Creates and returns a Promise that resolves when the
+ * "Finished loading config!" message is logged to the output channel.
+ *
+ * @param timeout - Maximum time to wait in milliseconds (default: 5000)
+ * @returns Promise that resolves when config is loaded or rejects on timeout
+ */
+function whenConfigLoaded(timeout: number = 2000) {
+    return new Promise<void>((resolve, reject) => {
+        const startTime = Date.now();
+        const checkForMessage = () => {
+            if (Date.now() - startTime > timeout) {
+                reject(new Error('Timeout waiting for config to load'));
+                return;
+            }
+            // Check for only the most recent calls
+            const recentCalls = mockOutputChannel.appendLine.getCalls().slice(-3);
+            if (recentCalls.some(call => call.args[0] === 'Finished loading config!')) {
+                resolve();
+            } else {
+                setTimeout(checkForMessage, 100);
+            }
+        };
+        checkForMessage();
+    });
+}
+
+/**
+* If debugCI is true, logs to the console
+* Otherwise, does nothing.
+*/
+function debugLog(message?: any, ...optionalParams: any[]) {
+    if (debugCI) {
+        console.log(message, ...optionalParams);
+    }
+}
 
 suite('Extension Test Suite', function (this: Mocha.Suite) {
     // TODO: Remove Debug timeout
     // this.timeout(30000);
 
-    // let outputChannel: vscode.OutputChannel;
-    let testOutput: string[] = [];
     let sandbox: sinon.SinonSandbox;
-    let configManager: ConfigManager;
     const extension = vscode.extensions.getExtension('WilliamWu-HJ.acpihelper');
 
     suiteSetup(() => {
-        console.log('Setting up test suite...');
-        console.log('Before rewire: Is extension active:', extension?.isActive);
+        if (process.env.DEBUG_CI === 'true') {
+            debugCI = true;
+        }
+        debugLog('Setting up test suite...');
+        debugLog('Before rewire: Is extension active:', extension?.isActive);
 
         sandbox = sinon.createSandbox();
 
@@ -39,12 +78,7 @@ suite('Extension Test Suite', function (this: Mocha.Suite) {
         } as sinon.SinonStubbedInstance<vscode.OutputChannel>;
 
         mockLogOutputChannel = {
-            append: sandbox.stub(),
-            appendLine: sandbox.stub(),
-            clear: sandbox.stub(),
-            dispose: sandbox.stub(),
-            hide: sandbox.stub(),
-            show: sandbox.stub(),
+            ...mockOutputChannel,
             // Add LogOutputChannel properties
             logLevel: vscode.LogLevel.Info,
             onDidChangeLogLevel: sandbox.stub(),
@@ -70,23 +104,23 @@ suite('Extension Test Suite', function (this: Mocha.Suite) {
         //    // Handle different call signatures based on arguments
         //    if (typeof column === 'boolean') {
         //        // Called with show(preserveFocus: boolean)
-        //        console.log('Mock show called with preserveFocus:', column);
+        //        debugLog('Mock show called with preserveFocus:', column);
         //    } else if (column !== undefined) {
         //        // Called with show(column: ViewColumn, preserveFocus?: boolean)
-        //        console.log('Mock show called with column:', column, 'preserveFocus:', preserveFocus);
+        //        debugLog('Mock show called with column:', column, 'preserveFocus:', preserveFocus);
         //    } else {
         //        // Called with show()
-        //        console.log('Mock show called without arguments');
+        //        debugLog('Mock show called without arguments');
         //    }
         //    // You can add assertions here or store call data for later assertions
         //});
 
-        console.log('After mocking - createOutputChannel identity:', vscode.window.createOutputChannel.prototype);
-        console.log('End of suiteSetup(): Is extension active:', extension?.isActive);
+        debugLog('After mocking - createOutputChannel identity:', vscode.window.createOutputChannel.prototype);
+        debugLog('End of suiteSetup(): Is extension active:', extension?.isActive);
     });
 
     suiteTeardown(() => {
-        console.log('Tearing down test suite...');
+        debugLog('Tearing down test suite...');
         mockOutputChannel.dispose();
         mockLogOutputChannel.dispose();
         sandbox.restore();
@@ -94,9 +128,8 @@ suite('Extension Test Suite', function (this: Mocha.Suite) {
 
     setup(function setupHook() {
         // Reset the outputChannel mocks before each test
-        // mockOutputChannel.appendLine.resetHistory();
-        // mockLogOutputChannel.appendLine.resetHistory();
-        testOutput = [];
+        mockOutputChannel.appendLine.resetHistory();
+        mockLogOutputChannel.appendLine.resetHistory();
     });
 
     teardown(() => {
@@ -111,7 +144,7 @@ suite('Extension Test Suite', function (this: Mocha.Suite) {
     // Side Effect: suite-global extension is set to the extension instance
     test('Extension is loaded', async () => {
         // const allExtensions = vscode.extensions.all;
-        // console.log('All loaded extensions:', allExtensions.map(ext => ({
+        // debugLog('All loaded extensions:', allExtensions.map(ext => ({
         // 	id: ext.id,
         // 	isActive: ext.isActive
         // })));
@@ -137,67 +170,49 @@ suite('Extension Test Suite', function (this: Mocha.Suite) {
             attempts++;
         }
 
-        // console.log('Extension:', extension);
-        // console.log('Extension ID:', extension?.id);
-        // console.log('Extension package:', extension?.packageJSON);
-        // console.log('Extension active:', extension?.isActive);
+        // debugLog('Extension:', extension);
+        // debugLog('Extension ID:', extension?.id);
+        // debugLog('Extension package:', extension?.packageJSON);
+        // debugLog('Extension active:', extension?.isActive);
 
-        configManager = extension?.exports.configManager;
+        let configManager = extension?.exports.configManager;
 
         // Log the initial state of the arrays in the extension
-        console.log('Initial extension arrays:', {
+        debugLog('Initial extension arrays:', {
             configKey: configManager.configKey,
-            configDesc: configManager.configDesc,
-            // "extensionConfigManager.configKey": extensionConfigManager.configKey,
-            // "extensionConfigManager.configDesc": extensionConfigManager.configDesc
+            configDesc: configManager.configDesc
         });
 
         const commands = await vscode.commands.getCommands();
-        // console.log('Available commands:', commands.find((str, idx) => { str.includes('acpihelper.reloadConfig') ? true : false; }));
-        // console.log('Available commands:', commands);
+        // debugLog('Available commands:', commands.find((str, idx) => { str.includes('acpihelper.reloadConfig') ? true : false; }));
+        // debugLog('Available commands:', commands);
         // Activate the extension by executing one of its commands
         await vscode.commands.executeCommand('acpihelper.Help');
-        console.log('acpihelper commands:', commands.filter(name => name.startsWith("acpi")));
+        debugLog('acpihelper commands:', commands.filter(name => name.startsWith("acpi")));
         assert.ok(commands.includes('acpihelper.reloadConfig'), 'Extension reloadConfig command should be available');
         assert.ok(commands.includes('acpihelper.Help'), 'Extension HelpInfo command should be available');
     });
 
     test('Config path explicitly disabled', async () => {
-        console.log('Running test: Config path explicitly disabled');
+        debugLog('Running test: Config path explicitly disabled');
         try {
             // TODO: Remove this
             // Add debug logging for mock state
-            // console.log('Mock state before reload:', {
+            // debugLog('Mock state before reload:', {
             // 	appendLineCalled: mockOutputChannel.appendLine.called,
             // 	appendLineCalls: mockOutputChannel.appendLine.getCalls().map(call => call.args)
             // });
 
             // Set config to disabled state
+            // (Triggers automatic config reload)
             await vscode.workspace.getConfiguration('acpihelper').update('configPath', '', true);
             await vscode.workspace.getConfiguration('acpihelper').update('includeUserConfig', true, true);
 
-            // Clear previous output
-            testOutput = [];
-            // console.log('Initial testOutput:', testOutput); // TODO: Remove Debug log
-
-            // Trigger config reload
-            // await vscode.commands.executeCommand('workbench.action.reloadWindow');
-            // outputChannel.show();
-            // await vscode.commands.executeCommand('workbench.action.openView', 'Output');
             await vscode.commands.executeCommand('workbench.panel.output.focus');
-            await vscode.commands.executeCommand('acpihelper.reloadConfig');
 
             // Add a small delay to allow output to be captured
             // await new Promise(resolve => setTimeout(resolve, 30000));
             // await new Promise(resolve => setTimeout(resolve, 1000));
-
-            // Add debug logging for mock state after reload
-            // console.log('Mock state after reload:', {
-            // 	appendLineCalled: mockOutputChannel.appendLine.called,
-            // 	appendLineCalls: mockOutputChannel.appendLine.getCalls().map(call => call.args)
-            // });
-
-            console.log('After reload, testOutput:', testOutput); // TODO: Remove Debug log
 
             // Verify output messages
             assert.ok(mockOutputChannel.appendLine.called, 'appendLine should have been called');
@@ -217,45 +232,21 @@ suite('Extension Test Suite', function (this: Mocha.Suite) {
 
     test('User-defined config path', async () => {
         assert.ok(extension, 'Extension should be found');
-        console.log('Beginning of test(\'User-defined config path\'): Is extension active:', extension?.isActive);
+        debugLog('Beginning of test(\'User-defined config path\'): Is extension active:', extension?.isActive);
         assert.ok(extension.isActive, 'Extension should be active');
 
-        console.log("Extension exports: ", extension.exports);
-        const thisConfigManager = extension.exports.configManager;
-        assert.ok(thisConfigManager, 'configManager should be exported');
-        console.log('thisConfigManager instance ID:', thisConfigManager);
-        console.log('thisConfigManager constructor:', thisConfigManager.constructor.name);
+        debugLog("Extension exports: ", extension.exports);
+        const configManager = extension.exports.configManager;
+        assert.ok(configManager, 'configManager should be exported');
+        debugLog('configManager instance:', configManager);
+        debugLog('configManager constructor:', configManager.constructor.name);
 
-        // Log the actual module instance
-        console.log('acpihelper module:', acpihelper);
 
-        // Log the actual instance we're getting
-        console.log('acpihelper.configManager instance ID:', acpihelper.configManager);
-        console.log('acpihelper.configManager constructor:', acpihelper.configManager.constructor.name);
-
-        // Log the require cache for our extension
-        console.log('Require cache keys:', Object.keys(require.cache));
-        console.log('Extension module in cache:', require.cache[require.resolve('../../extension')]);
-
-        // Get the ConfigManager instance from the extension (before config reload)
-        // let configManager = acpihelper.__get__('configManager');
-        const configManager = acpihelper.configManager;
-        console.log('First configManager instance ID:', configManager);
-        console.log('Extension exports thisConfigManager instance ID:', thisConfigManager);
-        console.log('Are instances the same?', configManager === thisConfigManager);
-        console.log('Are instances from same constructor?',
-            configManager.constructor === thisConfigManager.constructor);
-        // assert.strictEqual(configManager, thisConfigManager, 'Should be the same ConfigManager instance');
-        assert.notStrictEqual(configManager, thisConfigManager, 'These are NOT the same ConfigManager instance');
-        console.log('Before user-defined config reload: configKey = ', configManager.configKey);
-        console.log('Before user-defined config reload: configDesc = ', configManager.configDesc);
+        debugLog('extension.exports configManager instance:', configManager);
 
         // Now we can use this instance for our tests
-        console.log('Before config reload:', {
-            "configManager.configKey": configManager.configKey,
-            "configManager.configDesc": configManager.configDesc,
-            "thisConfigManager.configKey": thisConfigManager.configKey,
-            "thisConfigManager.configDesc": thisConfigManager.configDesc
+        debugLog('Before config reload:', {
+            configManager
         });
 
         // Get path to test fixture
@@ -264,59 +255,31 @@ suite('Extension Test Suite', function (this: Mocha.Suite) {
 
         // TODO: Remove this
         // Add debug logging for mock state before settings reload
-        console.log('Mock state before user-defined config reload:', {
+        debugLog('Mock state before user-defined config reload:', {
             appendLineCalled: mockOutputChannel.appendLine.called,
             appendLineCalls: mockOutputChannel.appendLine.getCalls().map(call => call.args)
         });
 
         // Create a promise that resolves when the "Finished loading config!" message is logged
-        const configLoadedPromise = new Promise<void>((resolve) => {
-            const checkForMessage = () => {
-                // Check for only the most recent calls
-                const recentCalls = mockOutputChannel.appendLine.getCalls().slice(-3);
-                if (recentCalls.some(call => call.args[0] === 'Finished loading config!')) {
-                    resolve();
-                } else {
-                    setTimeout(checkForMessage, 100);
-                }
-            };
-            checkForMessage();
-        });
+        const configLoadedPromise = whenConfigLoaded();
 
         // Set config to use test fixture
+        // (Triggers automatic config reload)
         await vscode.workspace.getConfiguration('acpihelper').update('configPath', testConfigPath, true);
         await vscode.workspace.getConfiguration('acpihelper').update('includeUserConfig', true, true);
-
-        // Clear previous output
-        testOutput = [];
-
-        // Trigger config reload
-        // await vscode.commands.executeCommand('workbench.action.reloadWindow');
-        // await vscode.commands.executeCommand('acpihelper.reloadConfig');
 
         // Wait for the config to finish loading, and for result arrays to be populated
         await configLoadedPromise;
 
         // Add debug logging for mock state after settings reload
-        console.log('Mock state after user-defined config reload:', {
+        debugLog('Mock state after user-defined config reload:', {
             appendLineCalled: mockOutputChannel.appendLine.called,
             appendLineCalls: mockOutputChannel.appendLine.getCalls().map(call => call.args)
         });
 
-        // Get the instance after config reload
-        const sameConfigManager = acpihelper.configManager;
-        console.log('Second configManager instance ID:', sameConfigManager);
-        // console.log('After user-defined config reload: ConfigManager instance:', sameConfigManager);
-        // Verify they are the same instance
-        // Log the actual object references
-        console.log('Are instances the same?', configManager === sameConfigManager);
-        console.log('Are instances from same constructor?',
-            configManager.constructor === sameConfigManager.constructor);
-        assert.strictEqual(configManager, sameConfigManager, 'Should be the same ConfigManager instance');
-
-        console.log('thisConfigManager Arrays after config load:', {
-            configKey: thisConfigManager.configKey,
-            configDesc: thisConfigManager.configDesc
+        debugLog('configManager Arrays after config load:', {
+            configKey: configManager.configKey,
+            configDesc: configManager.configDesc
         });
 
         // Verify output messages
@@ -330,9 +293,9 @@ suite('Extension Test Suite', function (this: Mocha.Suite) {
 
 
         // Verify arrays contain unique test fixture data
-        assert.strictEqual(thisConfigManager.configDesc.length, 6);
-        assert.strictEqual(thisConfigManager.configKey[0], 'CUST');
-        assert.strictEqual(thisConfigManager.configDesc[0], 'CUSTOM Keyword Test');
+        assert.strictEqual(configManager.configDesc.length, 6);
+        assert.strictEqual(configManager.configKey[0], 'CUST');
+        assert.strictEqual(configManager.configDesc[0], 'CUSTOM Keyword Test');
 
         // Verify that test arrays contain the entire expected values
         // TODO
@@ -340,16 +303,14 @@ suite('Extension Test Suite', function (this: Mocha.Suite) {
     });
 
     test('Default config path', async () => {
+        assert.ok(extension, 'Extension should be found');
+        assert.ok(extension.isActive, 'Extension should be active');
+        const configManager = extension.exports.configManager;
+        assert.ok(configManager, 'configManager should be exported');
+        const configLoadedPromise = whenConfigLoaded();
         // Set config to use default path
         await vscode.workspace.getConfiguration('acpihelper').update('configPath', '', true);
         await vscode.workspace.getConfiguration('acpihelper').update('includeUserConfig', false, true);
-
-        // Clear previous output
-        testOutput = [];
-
-        // Trigger config reload
-        // await vscode.commands.executeCommand('workbench.action.reloadWindow');
-        await vscode.commands.executeCommand('acpihelper.reloadConfig');
 
         // Verify output messages
         [sinon.match((arg: string) => arg.startsWith('Default extension-provided config path')),
@@ -360,11 +321,13 @@ suite('Extension Test Suite', function (this: Mocha.Suite) {
             }
         );
 
-        // TODO: Remove old broken assertions
-        // assert.ok(testOutput.some(line => line.includes('Default extension-provided config path')));
-        // assert.ok(testOutput.some(line => line.includes('Extra keywords defined by this extension')));
+        await configLoadedPromise;
 
-        // Gather results
+        // Verify arrays contain unique test fixture data
+        assert.strictEqual(configManager.configDesc.length, 5);
+        assert.strictEqual(configManager.configKey[0], 'ECRD');
+        assert.strictEqual(configManager.configDesc[0], 'EC Read');
+
         // Verify arrays contain default config data
         // TODO
     });
