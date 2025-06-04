@@ -101,8 +101,8 @@ suite('Extension Test Suite', function (this: Mocha.Suite) {
 
     teardown(() => {
 		// Clean up after each test
-		// mockOutputChannel.appendLine.resetHistory();
-		// mockLogOutputChannel.appendLine.resetHistory();
+		mockOutputChannel.appendLine.resetHistory();
+		mockLogOutputChannel.appendLine.resetHistory();
     });
 
 	// Tests Activation of the extension via ASL file
