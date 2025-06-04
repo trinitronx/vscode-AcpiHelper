@@ -289,6 +289,11 @@ suite('Extension Test Suite', function (this: Mocha.Suite) {
     });
 
     test('Default config path', async () => {
+        assert.ok(extension, 'Extension should be found');
+        assert.ok(extension.isActive, 'Extension should be active');
+        const configManager = extension.exports.configManager;
+        assert.ok(configManager, 'configManager should be exported');
+        const configLoadedPromise = whenConfigLoaded();
         // Set config to use default path
         await vscode.workspace.getConfiguration('acpihelper').update('configPath', '', true);
         await vscode.workspace.getConfiguration('acpihelper').update('includeUserConfig', false, true);
@@ -302,7 +307,13 @@ suite('Extension Test Suite', function (this: Mocha.Suite) {
             }
         );
 
-        // Gather results
+        await configLoadedPromise;
+
+        // Verify arrays contain unique test fixture data
+        assert.strictEqual(configManager.configDesc.length, 5);
+        assert.strictEqual(configManager.configKey[0], 'ECRD');
+        assert.strictEqual(configManager.configDesc[0], 'EC Read');
+
         // Verify arrays contain default config data
         // TODO
     });
