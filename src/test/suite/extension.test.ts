@@ -5,7 +5,6 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as sinon from 'sinon';
 import * as vscode from 'vscode';
-import { ConfigManager } from '../../lib/configmanager';
 import rewire = require("rewire");
 let acpihelper = rewire("../../extension");
 
@@ -19,7 +18,6 @@ suite('Extension Test Suite', function (this: Mocha.Suite) {
     // let outputChannel: vscode.OutputChannel;
     let testOutput: string[] = [];
     let sandbox: sinon.SinonSandbox;
-    let configManager: ConfigManager;
     const extension = vscode.extensions.getExtension('WilliamWu-HJ.acpihelper');
 
     suiteSetup(() => {
@@ -142,7 +140,7 @@ suite('Extension Test Suite', function (this: Mocha.Suite) {
         // console.log('Extension package:', extension?.packageJSON);
         // console.log('Extension active:', extension?.isActive);
 
-        configManager = extension?.exports.configManager;
+        let configManager = extension?.exports.configManager;
 
         // Log the initial state of the arrays in the extension
         console.log('Initial extension arrays:', {
