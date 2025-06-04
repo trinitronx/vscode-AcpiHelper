@@ -127,7 +127,7 @@ function handleConfigChange(event: vscode.ConfigurationChangeEvent, context: vsc
     }
 }
 
-function getPreDefineObjIndex(STxt: string) :string {
+function getPreDefineObjIndex(sTxt: string) :string {
     const PRE_DEFINE_NAME: string[] = [
         "_ACx", "_ADR", "_AEI", "_ALC", 
         "_ALI", "_ALN", "_ALP", "_ALR", 
@@ -1002,47 +1002,47 @@ function getPreDefineObjIndex(STxt: string) :string {
         "Compaq 14400 modem (TBD)", 
         "Compaq 2400/9600 modem (TBD)"
     ];
-    for (let IndexVal =0 ; IndexVal < PRE_DEFINE_NAME.length; IndexVal ++)
+    for (let indexVal =0 ; indexVal < PRE_DEFINE_NAME.length; indexVal ++)
     {
-        if (STxt.toUpperCase() === PRE_DEFINE_NAME[IndexVal].toUpperCase())
+        if (sTxt.toUpperCase() === PRE_DEFINE_NAME[indexVal].toUpperCase())
         {
-            if (PRE_DEF_NAME_HELP_STR.length >= IndexVal)
+            if (PRE_DEF_NAME_HELP_STR.length >= indexVal)
             {
-                return PRE_DEF_NAME_HELP_STR[IndexVal];
+                return PRE_DEF_NAME_HELP_STR[indexVal];
             }
         }
     }
 
-    let UpStrNew = STxt.toUpperCase();
-    if ((UpStrNew.length === 7) && (UpStrNew.indexOf("PNP")>=0)) // PNP
+    let upStrNew = sTxt.toUpperCase();
+    if ((upStrNew.length === 7) && (upStrNew.indexOf("PNP")>=0)) // PNP
     {
-        if (UpStrNew.indexOf("PNP0")>=0){
+        if (upStrNew.indexOf("PNP0")>=0){
             return "System Device. Note: only generic info was found based on PNP Spec.";
         }
-        if (UpStrNew.indexOf("PNP8")>=0){
+        if (upStrNew.indexOf("PNP8")>=0){
             return "Network adapters.";
         }
-        if (UpStrNew.indexOf("PNPA")>=0){
+        if (upStrNew.indexOf("PNPA")>=0){
             return "Small computer system interface (SCSI), proprietary CD adapters. Note: only generic info was found based on PNP Spec.";
         }
-        if (UpStrNew.indexOf("PNPB")>=0){
+        if (upStrNew.indexOf("PNPB")>=0){
             return "Sound, video capture, multimedia. Note: only generic info was found based on PNP Spec.";
         }
-        if (UpStrNew.indexOf("PNPC")>=0){
+        if (upStrNew.indexOf("PNPC")>=0){
             return "Modems. Note: only generic info was found based on PNP Spec.";
         }
-        if (UpStrNew.indexOf("PNPD")>=0){
+        if (upStrNew.indexOf("PNPD")>=0){
             return "Modems. Note: only generic info was found based on PNP Spec.";
         }
     }
  
-    for (let IndexVal =0 ; IndexVal < configManager.configKey.length; IndexVal ++)
+    for (let indexVal =0 ; indexVal < configManager.configKey.length; indexVal ++)
     {
-        if (STxt.toUpperCase() === configManager.configKey[IndexVal].toUpperCase())
+        if (sTxt.toUpperCase() === configManager.configKey[indexVal].toUpperCase())
         {
-            if (configManager.configDesc.length >= IndexVal)
+            if (configManager.configDesc.length >= indexVal)
             {
-                return configManager.configDesc[IndexVal];
+                return configManager.configDesc[indexVal];
             }
         }
     }
