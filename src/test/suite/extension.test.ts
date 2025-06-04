@@ -20,20 +20,11 @@ suite('Extension Test Suite', function (this: Mocha.Suite) {
 	let testOutput: string[] = [];
 	let sandbox: sinon.SinonSandbox;
 	let configManager: ConfigManager;
+	const extension = vscode.extensions.getExtension('WilliamWu-HJ.acpihelper');
 
 	suiteSetup(() => {
 		console.log('Setting up test suite...');
-		const extension = vscode.extensions.getExtension('WilliamWu-HJ.acpihelper');
 		console.log('Before rewire: Is extension active:', extension?.isActive);
-		configManager = extension?.exports.__get__('configManager');
-
-		// Log the initial state of the arrays in the extension
-		console.log('Initial extension arrays:', {
-			configKey: configManager.configKey,
-			configDesc: configManager.configDesc,
-			// "extensionConfigManager.configKey": extensionConfigManager.configKey,
-			// "extensionConfigManager.configDesc": extensionConfigManager.configDesc
-		});
 
 		sandbox = sinon.createSandbox();
 
@@ -114,6 +105,10 @@ suite('Extension Test Suite', function (this: Mocha.Suite) {
 		// mockLogOutputChannel.appendLine.resetHistory();
     });
 
+	// Tests Activation of the extension via ASL file
+	// Also retreives the extension instance for use in subsequent tests
+	//
+	// Side Effect: suite-global extension is set to the extension instance
 	test('Extension is loaded', async () => {
 		// const allExtensions = vscode.extensions.all;
 		// console.log('All loaded extensions:', allExtensions.map(ext => ({
@@ -135,7 +130,6 @@ suite('Extension Test Suite', function (this: Mocha.Suite) {
 		// await new Promise(resolve => setTimeout(resolve, 1000));
 
 		// Wait for the extension to be activated
-		const extension = vscode.extensions.getExtension('WilliamWu-HJ.acpihelper');
     	let attempts = 0;
     	const maxAttempts = 20;
     	while (!extension?.isActive && attempts < maxAttempts) {
@@ -147,6 +141,16 @@ suite('Extension Test Suite', function (this: Mocha.Suite) {
 		// console.log('Extension ID:', extension?.id);
 		// console.log('Extension package:', extension?.packageJSON);
 		// console.log('Extension active:', extension?.isActive);
+
+		configManager = extension?.exports.configManager;
+
+		// Log the initial state of the arrays in the extension
+		console.log('Initial extension arrays:', {
+			configKey: configManager.configKey,
+			configDesc: configManager.configDesc,
+			// "extensionConfigManager.configKey": extensionConfigManager.configKey,
+			// "extensionConfigManager.configDesc": extensionConfigManager.configDesc
+		});
 
         const commands = await vscode.commands.getCommands();
 		// console.log('Available commands:', commands.find((str, idx) => { str.includes('acpihelper.reloadConfig') ? true : false; }));
@@ -212,7 +216,6 @@ suite('Extension Test Suite', function (this: Mocha.Suite) {
     });
 
 	test('User-defined config path', async () => {
-		const extension = vscode.extensions.getExtension('WilliamWu-HJ.acpihelper');
 		assert.ok(extension, 'Extension should be found');
 		console.log('Beginning of test(\'User-defined config path\'): Is extension active:', extension?.isActive);
 		assert.ok(extension.isActive, 'Extension should be active');
@@ -272,7 +275,6 @@ suite('Extension Test Suite', function (this: Mocha.Suite) {
 				// Check for only the most recent calls
 				const recentCalls = mockOutputChannel.appendLine.getCalls().slice(-3);
 				if (recentCalls.some(call => call.args[0] === 'Finished loading config!')) {
-				// if (mockOutputChannel.appendLine.calledWith('Finished loading config!')) {
 					resolve();
 				} else {
 					setTimeout(checkForMessage, 100);
