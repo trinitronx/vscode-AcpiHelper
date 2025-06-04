@@ -1,11 +1,25 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
-import * as vscode from 'vscode';
 import * as path from 'path';
+import * as vscode from 'vscode';
+import { ConfigManager } from './lib/configmanager';
 
-let ExtConfigKey: string[]=[];
-let ExtConfigDesc: string[]=[];
+export const configManager = new ConfigManager("");
+// let ExtConfigKey: string[]=['ORIG'];
+// let ExtConfigDesc: string[]=['Original arrays'];
 let output: vscode.OutputChannel;
+
+
+// Export the arrays for testing
+// export { ExtConfigDesc, ExtConfigKey };
+
+// Export global arrays getter function when in test environment
+// export function getTestConfig() {
+    // if (process.env.NODE_ENV == 'test') {
+        // return { ExtConfigKey, ExtConfigDesc };
+    // }
+    // return undefined;
+// }
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -59,6 +73,15 @@ export function activate(context: vscode.ExtensionContext) {
   
 	context.subscriptions.push(disposable);
 	context.subscriptions.push(reloadConfig);
+	output.appendLine('extension context.extensionMode: ' + context.extensionMode);
+	output.appendLine('context.extensionMode == test : ' + (context.extensionMode === vscode.ExtensionMode.Test));
+	if (context.extensionMode === vscode.ExtensionMode.Test) {
+		// Only export the internal configManager instance when running
+		// integration tests
+		return {
+			configManager: configManager
+		};
+	}
 }
 
 // Load or reload the extension config
@@ -70,8 +93,8 @@ function loadConfig(context: vscode.ExtensionContext) {
 	let useConfig: boolean = false;
 
 	// Reset the external config keywords and descriptions
-	ExtConfigKey = [];
-	ExtConfigDesc = [];
+	// ExtConfigKey = [];
+	// ExtConfigDesc = [];
 
 	if (cfgPath === "" && includeUserConfig) {
 		// Config file is explicitly disabled
@@ -92,20 +115,45 @@ function loadConfig(context: vscode.ExtensionContext) {
 	}
 	if (useConfig === true) {
 		output.appendLine('Loading config path: ' + cfgPath);
-		vscode.workspace.openTextDocument(cfgPath).then(document => {
-			let AcpiCfgStr = document.getText();
-			output.appendLine('Parse Ext ACPI Cfg File!');
-			let ParsedResult = JSON.parse(AcpiCfgStr);
-			let KeyNum = Object.keys(ParsedResult).length;
-			output.appendLine(KeyNum.toString());
-			for (var i = 0; i< KeyNum; i++)
-			{
-				ExtConfigKey.push(ParsedResult[i].KeyWord);
-				ExtConfigDesc.push(ParsedResult[i].Desc);
-				output.appendLine(ParsedResult[i].KeyWord);
-				output.appendLine(ParsedResult[i].Desc);
-			}
+		// TODO: Remove debugging
+		// output.appendLine('Initial array state - ExtConfigKey:' + ExtConfigKey);
+		// output.appendLine('Initial array state - ExtConfigDesc:' + ExtConfigDesc);
+		output.appendLine('loadConfig(): Initial array state - configManager.configKey:' + configManager.configKey);
+		output.appendLine('loadConfig(): Initial array state - configManager.configDesc:' + configManager.configDesc);
 
+		configManager.configPath = cfgPath;
+
+		// vscode.workspace.openTextDocument(cfgPath).then(document => {
+		// 	let AcpiCfgStr = document.getText();
+		// 	output.appendLine('Parse Ext ACPI Cfg File!');
+		// 	let ParsedResult = JSON.parse(AcpiCfgStr);
+		// 	let KeyNum = Object.keys(ParsedResult).length;
+		// 	// TODO: Remove debugging
+        //     // Log before pushing
+        //     output.appendLine('Before pushing - ExtConfigKey:' + ExtConfigKey);
+		// 	output.appendLine('Before pushing - ExtConfigDesc:' + ExtConfigDesc);
+
+		// 	output.appendLine(KeyNum.toString());
+		// 	for (var i = 0; i < KeyNum; i++) {
+		// 		ExtConfigKey.push(ParsedResult[i].KeyWord);
+		// 		ExtConfigDesc.push(ParsedResult[i].Desc);
+		// 		output.appendLine(ParsedResult[i].KeyWord);
+		// 		output.appendLine(ParsedResult[i].Desc);
+		// 	}
+
+		// 	// TODO: Remove debugging
+        //     // Log after pushing
+        //     output.appendLine('After pushing - ExtConfigKey:' + ExtConfigKey);
+        //     output.appendLine('After pushing - ExtConfigDesc:' + ExtConfigDesc);
+		// })
+		configManager.loadConfig(output).then(() => {
+			output.appendLine('Finished loading config!');
+            // TODO: Remove debugging
+			// Log final state
+            // output.appendLine('Final state - ExtConfigKey:' + ExtConfigKey);
+			// output.appendLine('Final state - ExtConfigDesc:' + ExtConfigDesc);
+			output.appendLine('loadConfig(): Final state - configManager.configKey:' + configManager.configKey);
+			output.appendLine('loadConfig(): Final state - configManager.configDesc:' + configManager.configDesc);
 		});
 	}
 }
@@ -1027,13 +1075,13 @@ function GetPreDefineObjIndex(STxt: string) :string {
 		}
 	}
  
-	for (let IndexVal =0 ; IndexVal < ExtConfigKey.length; IndexVal ++)
+	for (let IndexVal =0 ; IndexVal < configManager.configKey.length; IndexVal ++)
 	{
-		if (STxt.toUpperCase() == ExtConfigKey[IndexVal].toUpperCase())
+		if (STxt.toUpperCase() == configManager.configKey[IndexVal].toUpperCase())
 		{
-			if (ExtConfigDesc.length >= IndexVal)
+			if (configManager.configDesc.length >= IndexVal)
 			{
-				return ExtConfigDesc[IndexVal];
+				return configManager.configDesc[IndexVal];
 			}
 		}
 	}
