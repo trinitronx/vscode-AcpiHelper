@@ -8,7 +8,7 @@ import * as vscode from 'vscode';
 import rewire = require("rewire");
 let acpihelper = rewire("../../extension");
 
-let debug_ci: boolean = false; // set env var DEBUG_CI=true to turn on
+let debugCI: boolean = false; // set env var DEBUG_CI=true to turn on
 let mockOutputChannel: sinon.SinonStubbedInstance<vscode.OutputChannel>;
 let mockLogOutputChannel: sinon.SinonStubbedInstance<vscode.LogOutputChannel>;
 
@@ -42,11 +42,11 @@ function whenConfigLoaded(timeout: number = 2000) {
 }
 
 /**
-* If debug_ci is true, logs to the console
+* If debugCI is true, logs to the console
 * Otherwise, does nothing.
 */
 function debugLog(message?: any, ...optionalParams: any[]) {
-    if (debug_ci) {
+    if (debugCI) {
         console.log(message, ...optionalParams);
     }
 }
@@ -60,7 +60,7 @@ suite('Extension Test Suite', function (this: Mocha.Suite) {
 
     suiteSetup(() => {
         if (process.env.DEBUG_CI === 'true') {
-            debug_ci = true;
+            debugCI = true;
         }
         debugLog('Setting up test suite...');
         debugLog('Before rewire: Is extension active:', extension?.isActive);
