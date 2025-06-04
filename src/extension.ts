@@ -46,7 +46,7 @@ export function activate(context: vscode.ExtensionContext) {
         provideHover(document, position, token) {
             const range = document.getWordRangeAtPosition(position);
             const word = document.getText(range);
-            let strTxt: string = GetPreDefineObjIndex(word);
+            let strTxt: string = getPreDefineObjIndex(word);
             if (strTxt !== "")
             {
                 return new vscode.Hover(strTxt);
@@ -127,7 +127,7 @@ function handleConfigChange(event: vscode.ConfigurationChangeEvent, context: vsc
     }
 }
 
-function GetPreDefineObjIndex(STxt: string) :string {
+function getPreDefineObjIndex(STxt: string) :string {
     const PRE_DEFINE_NAME: string[] = [
         "_ACx", "_ADR", "_AEI", "_ALC", 
         "_ALI", "_ALN", "_ALP", "_ALR", 
