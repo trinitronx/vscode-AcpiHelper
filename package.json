@@ -71,8 +71,10 @@
   "scripts": {
     "vscode:prepublish": "npm run compile",
     "compile": "tsc -p ./",
+    "compile-test": "tsc -p ./ && npm run copy-test-fixtures",
+    "copy-test-fixtures": "cp -r src/test/fixtures out/test/",
     "watch": "tsc -watch -p ./",
-    "pretest": "npm run compile && npm run lint",
+    "pretest": "npm run compile-test && npm run lint",
     "lint": "eslint src --ext ts",
     "test": "node ./out/test/runTest.js"
   },
