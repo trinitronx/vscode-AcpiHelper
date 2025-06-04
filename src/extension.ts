@@ -5,21 +5,7 @@ import * as vscode from 'vscode';
 import { ConfigManager } from './lib/configmanager';
 
 export const configManager = new ConfigManager("");
-// let ExtConfigKey: string[]=['ORIG'];
-// let ExtConfigDesc: string[]=['Original arrays'];
 let output: vscode.OutputChannel;
-
-
-// Export the arrays for testing
-// export { ExtConfigDesc, ExtConfigKey };
-
-// Export global arrays getter function when in test environment
-// export function getTestConfig() {
-    // if (process.env.NODE_ENV == 'test') {
-        // return { ExtConfigKey, ExtConfigDesc };
-    // }
-    // return undefined;
-// }
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
@@ -123,35 +109,10 @@ function loadConfig(context: vscode.ExtensionContext) {
 
 		configManager.configPath = cfgPath;
 
-		// vscode.workspace.openTextDocument(cfgPath).then(document => {
-		// 	let AcpiCfgStr = document.getText();
-		// 	output.appendLine('Parse Ext ACPI Cfg File!');
-		// 	let ParsedResult = JSON.parse(AcpiCfgStr);
-		// 	let KeyNum = Object.keys(ParsedResult).length;
-		// 	// TODO: Remove debugging
-        //     // Log before pushing
-        //     output.appendLine('Before pushing - ExtConfigKey:' + ExtConfigKey);
-		// 	output.appendLine('Before pushing - ExtConfigDesc:' + ExtConfigDesc);
-
-		// 	output.appendLine(KeyNum.toString());
-		// 	for (var i = 0; i < KeyNum; i++) {
-		// 		ExtConfigKey.push(ParsedResult[i].KeyWord);
-		// 		ExtConfigDesc.push(ParsedResult[i].Desc);
-		// 		output.appendLine(ParsedResult[i].KeyWord);
-		// 		output.appendLine(ParsedResult[i].Desc);
-		// 	}
-
-		// 	// TODO: Remove debugging
-        //     // Log after pushing
-        //     output.appendLine('After pushing - ExtConfigKey:' + ExtConfigKey);
-        //     output.appendLine('After pushing - ExtConfigDesc:' + ExtConfigDesc);
-		// })
 		configManager.loadConfig(output).then(() => {
 			output.appendLine('Finished loading config!');
             // TODO: Remove debugging
 			// Log final state
-            // output.appendLine('Final state - ExtConfigKey:' + ExtConfigKey);
-			// output.appendLine('Final state - ExtConfigDesc:' + ExtConfigDesc);
 			output.appendLine('loadConfig(): Final state - configManager.configKey:' + configManager.configKey);
 			output.appendLine('loadConfig(): Final state - configManager.configDesc:' + configManager.configDesc);
 		});
