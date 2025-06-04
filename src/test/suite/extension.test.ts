@@ -35,12 +35,7 @@ suite('Extension Test Suite', function (this: Mocha.Suite) {
         } as sinon.SinonStubbedInstance<vscode.OutputChannel>;
 
         mockLogOutputChannel = {
-            append: sandbox.stub(),
-            appendLine: sandbox.stub(),
-            clear: sandbox.stub(),
-            dispose: sandbox.stub(),
-            hide: sandbox.stub(),
-            show: sandbox.stub(),
+            ...mockOutputChannel,
             // Add LogOutputChannel properties
             logLevel: vscode.LogLevel.Info,
             onDidChangeLogLevel: sandbox.stub(),
