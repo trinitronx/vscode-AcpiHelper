@@ -43,6 +43,7 @@ jobs:
         run: pnpm run test
         env:
           DISPLAY: ${{ runner.os == 'Linux' && ':99.0' || '' }}
+          DEBUG_CI: ${{ env.debug_ci == 'true' || runner.debug == '1' }}
       - name: Check for vsce
         run: which vsce || echo "vsce not found"
         if: ${{ env.debug_ci == 'true' && runner.os != 'Windows' }}
