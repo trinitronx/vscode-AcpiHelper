@@ -12,7 +12,8 @@
   ],
   "activationEvents": [
     "onCommand:acpihelper.HelpInfo",
-    "onLanguage:EASL"
+    "onLanguage:EASL",
+    "onCommand:acpihelper.reloadConfig"
   ],
   "capabilities": {
     "hoverProvider": "true"
@@ -27,7 +28,14 @@
     "commands": [
       {
         "command": "acpihelper.HelpInfo",
-        "title": "Help"
+        "title": "Help",
+        "category": "ACPI Helper"
+      },
+      {
+        "command": "acpihelper.reloadConfig",
+        "title": "Reload Config",
+        "shortTitle": "Reload",
+        "category": "ACPI Helper"
       }
     ],
     "configuration": {

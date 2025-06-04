@@ -34,7 +34,12 @@ export function activate(context: vscode.ExtensionContext) {
 		// Display a message box to the user
 		vscode.window.showInformationMessage('Hello World from AcpiHelper!');
 	});
-  
+
+    // Add reload config command
+    let reloadConfig = vscode.commands.registerCommand('acpihelper.reloadConfig', () => {
+        loadConfig(context);
+        return Promise.resolve();
+    });
 	 
 
 	vscode.languages.registerHoverProvider('EASL', {
@@ -53,6 +58,7 @@ export function activate(context: vscode.ExtensionContext) {
 
   
 	context.subscriptions.push(disposable);
+	context.subscriptions.push(reloadConfig);
 }
 
 // Load or reload the extension config
