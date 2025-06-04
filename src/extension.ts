@@ -46,8 +46,8 @@ export function activate(context: vscode.ExtensionContext) {
         provideHover(document, position, token) {
             const range = document.getWordRangeAtPosition(position);
             const word = document.getText(range);
-            let strTxt: string = GetPreDefineObjIndex(word);
-            if (strTxt != "")
+            let strTxt: string = getPreDefineObjIndex(word);
+            if (strTxt !== "")
             {
                 return new vscode.Hover(strTxt);
             }
@@ -87,7 +87,7 @@ function loadConfig(context: vscode.ExtensionContext) {
         useConfig = false;
         output.appendLine('Config path disabled.');
         output.appendLine('Only standard keywords in ACPI specification will be shown.');
-    } else if (cfgPath != "" && includeUserConfig) {
+    } else if (cfgPath !== "" && includeUserConfig) {
     // Use user-defined config path
         useConfig = true;
         output.appendLine('User-defined config path: ' + cfgPath);
@@ -127,8 +127,8 @@ function handleConfigChange(event: vscode.ConfigurationChangeEvent, context: vsc
     }
 }
 
-function GetPreDefineObjIndex(STxt: string) :string {
-    let PreDefineName: string[] = [
+function getPreDefineObjIndex(sTxt: string) :string {
+    const PRE_DEFINE_NAME: string[] = [
         "_ACx", "_ADR", "_AEI", "_ALC", 
         "_ALI", "_ALN", "_ALP", "_ALR", 
         "_ALT", "_ALx", "_ART", "_ASI", 
@@ -375,7 +375,7 @@ function GetPreDefineObjIndex(STxt: string) :string {
         "PNPC001"
     ];
 
-    let PreDefNameHelpStr: string[] = [
+    const PRE_DEF_NAME_HELP_STR: string[] = [
         "Active Cooling – returns the active cooling policy threshold values.", 
         "Address: (1) returns the address of a device on its parent bus. (2) returns a unique ID for the display output device. (3) resource descriptor field.", 
         "Designates those GPIO interrupts that shall be handled by OSPM as ACPI events.", 
@@ -1002,47 +1002,47 @@ function GetPreDefineObjIndex(STxt: string) :string {
         "Compaq 14400 modem (TBD)", 
         "Compaq 2400/9600 modem (TBD)"
     ];
-    for (let IndexVal =0 ; IndexVal < PreDefineName.length; IndexVal ++)
+    for (let indexVal =0 ; indexVal < PRE_DEFINE_NAME.length; indexVal ++)
     {
-        if (STxt.toUpperCase() == PreDefineName[IndexVal].toUpperCase())
+        if (sTxt.toUpperCase() === PRE_DEFINE_NAME[indexVal].toUpperCase())
         {
-            if (PreDefNameHelpStr.length >= IndexVal)
+            if (PRE_DEF_NAME_HELP_STR.length >= indexVal)
             {
-                return PreDefNameHelpStr[IndexVal];
+                return PRE_DEF_NAME_HELP_STR[indexVal];
             }
         }
     }
 
-    let UpStrNew = STxt.toUpperCase();
-    if ((UpStrNew.length == 7) && (UpStrNew.indexOf("PNP")>=0)) // PNP
+    let upStrNew = sTxt.toUpperCase();
+    if ((upStrNew.length === 7) && (upStrNew.indexOf("PNP")>=0)) // PNP
     {
-        if (UpStrNew.indexOf("PNP0")>=0){
+        if (upStrNew.indexOf("PNP0")>=0){
             return "System Device. Note: only generic info was found based on PNP Spec.";
         }
-        if (UpStrNew.indexOf("PNP8")>=0){
+        if (upStrNew.indexOf("PNP8")>=0){
             return "Network adapters.";
         }
-        if (UpStrNew.indexOf("PNPA")>=0){
+        if (upStrNew.indexOf("PNPA")>=0){
             return "Small computer system interface (SCSI), proprietary CD adapters. Note: only generic info was found based on PNP Spec.";
         }
-        if (UpStrNew.indexOf("PNPB")>=0){
+        if (upStrNew.indexOf("PNPB")>=0){
             return "Sound, video capture, multimedia. Note: only generic info was found based on PNP Spec.";
         }
-        if (UpStrNew.indexOf("PNPC")>=0){
+        if (upStrNew.indexOf("PNPC")>=0){
             return "Modems. Note: only generic info was found based on PNP Spec.";
         }
-        if (UpStrNew.indexOf("PNPD")>=0){
+        if (upStrNew.indexOf("PNPD")>=0){
             return "Modems. Note: only generic info was found based on PNP Spec.";
         }
     }
  
-    for (let IndexVal =0 ; IndexVal < configManager.configKey.length; IndexVal ++)
+    for (let indexVal =0 ; indexVal < configManager.configKey.length; indexVal ++)
     {
-        if (STxt.toUpperCase() == configManager.configKey[IndexVal].toUpperCase())
+        if (sTxt.toUpperCase() === configManager.configKey[indexVal].toUpperCase())
         {
-            if (configManager.configDesc.length >= IndexVal)
+            if (configManager.configDesc.length >= indexVal)
             {
-                return configManager.configDesc[IndexVal];
+                return configManager.configDesc[indexVal];
             }
         }
     }
