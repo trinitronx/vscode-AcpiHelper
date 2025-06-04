@@ -47,7 +47,7 @@ export function activate(context: vscode.ExtensionContext) {
             const range = document.getWordRangeAtPosition(position);
             const word = document.getText(range);
             let strTxt: string = GetPreDefineObjIndex(word);
-            if (strTxt != "")
+            if (strTxt !== "")
             {
                 return new vscode.Hover(strTxt);
             }
@@ -87,7 +87,7 @@ function loadConfig(context: vscode.ExtensionContext) {
         useConfig = false;
         output.appendLine('Config path disabled.');
         output.appendLine('Only standard keywords in ACPI specification will be shown.');
-    } else if (cfgPath != "" && includeUserConfig) {
+    } else if (cfgPath !== "" && includeUserConfig) {
     // Use user-defined config path
         useConfig = true;
         output.appendLine('User-defined config path: ' + cfgPath);
@@ -1004,7 +1004,7 @@ function GetPreDefineObjIndex(STxt: string) :string {
     ];
     for (let IndexVal =0 ; IndexVal < PreDefineName.length; IndexVal ++)
     {
-        if (STxt.toUpperCase() == PreDefineName[IndexVal].toUpperCase())
+        if (STxt.toUpperCase() === PreDefineName[IndexVal].toUpperCase())
         {
             if (PreDefNameHelpStr.length >= IndexVal)
             {
@@ -1014,7 +1014,7 @@ function GetPreDefineObjIndex(STxt: string) :string {
     }
 
     let UpStrNew = STxt.toUpperCase();
-    if ((UpStrNew.length == 7) && (UpStrNew.indexOf("PNP")>=0)) // PNP
+    if ((UpStrNew.length === 7) && (UpStrNew.indexOf("PNP")>=0)) // PNP
     {
         if (UpStrNew.indexOf("PNP0")>=0){
             return "System Device. Note: only generic info was found based on PNP Spec.";
@@ -1038,7 +1038,7 @@ function GetPreDefineObjIndex(STxt: string) :string {
  
     for (let IndexVal =0 ; IndexVal < configManager.configKey.length; IndexVal ++)
     {
-        if (STxt.toUpperCase() == configManager.configKey[IndexVal].toUpperCase())
+        if (STxt.toUpperCase() === configManager.configKey[IndexVal].toUpperCase())
         {
             if (configManager.configDesc.length >= IndexVal)
             {
