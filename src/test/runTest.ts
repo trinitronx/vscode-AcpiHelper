@@ -21,10 +21,10 @@ async function main() {
 			extensionDevelopmentPath, extensionTestsPath,
 			// launchArgs: ['--disable-extensions'],
 			// launchArgs: ['--enable-proposed-api nativeWindowHandle'],
-			extensionTestsEnv: {
-				VSCODE_DEBUG_MODE: 'true',
-				VSCODE_EXTENSION_TESTS: 'true'
-			}
+			// extensionTestsEnv: {
+			// 	VSCODE_DEBUG_MODE: 'true',
+			// 	VSCODE_EXTENSION_TESTS: 'true'
+			// }
 		 });
 	} catch (err) {
 		console.error('Failed to run tests');
