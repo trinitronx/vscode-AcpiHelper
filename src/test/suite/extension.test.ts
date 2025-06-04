@@ -145,9 +145,7 @@ suite('Extension Test Suite', function (this: Mocha.Suite) {
         // Log the initial state of the arrays in the extension
         console.log('Initial extension arrays:', {
             configKey: configManager.configKey,
-            configDesc: configManager.configDesc,
-            // "extensionConfigManager.configKey": extensionConfigManager.configKey,
-            // "extensionConfigManager.configDesc": extensionConfigManager.configDesc
+            configDesc: configManager.configDesc
         });
 
         const commands = await vscode.commands.getCommands();
@@ -219,21 +217,21 @@ suite('Extension Test Suite', function (this: Mocha.Suite) {
         assert.ok(extension.isActive, 'Extension should be active');
 
         console.log("Extension exports: ", extension.exports);
-        const thisConfigManager = extension.exports.configManager;
-        assert.ok(thisConfigManager, 'configManager should be exported');
-        console.log('thisConfigManager instance ID:', thisConfigManager);
-        console.log('thisConfigManager constructor:', thisConfigManager.constructor.name);
+        const configManager = extension.exports.configManager;
+        assert.ok(configManager, 'configManager should be exported');
+        console.log('configManager instance:', configManager);
+        console.log('configManager constructor:', configManager.constructor.name);
 
 
         // Log the require cache for our extension
-        console.log('Require cache keys:', Object.keys(require.cache));
-        console.log('Extension module in cache:', require.cache[require.resolve('../../extension')]);
+        // console.log('Require cache keys:', Object.keys(require.cache));
+        // console.log('Extension module in cache:', require.cache[require.resolve('../../extension')]);
 
-        console.log('Extension exports thisConfigManager instance:', thisConfigManager);
+        console.log('extension.exports configManager instance:', configManager);
 
         // Now we can use this instance for our tests
         console.log('Before config reload:', {
-            thisConfigManager
+            configManager
         });
 
         // Get path to test fixture
@@ -281,9 +279,9 @@ suite('Extension Test Suite', function (this: Mocha.Suite) {
             appendLineCalls: mockOutputChannel.appendLine.getCalls().map(call => call.args)
         });
 
-        console.log('thisConfigManager Arrays after config load:', {
-            configKey: thisConfigManager.configKey,
-            configDesc: thisConfigManager.configDesc
+        console.log('configManager Arrays after config load:', {
+            configKey: configManager.configKey,
+            configDesc: configManager.configDesc
         });
 
         // Verify output messages
@@ -297,9 +295,9 @@ suite('Extension Test Suite', function (this: Mocha.Suite) {
 
 
         // Verify arrays contain unique test fixture data
-        assert.strictEqual(thisConfigManager.configDesc.length, 6);
-        assert.strictEqual(thisConfigManager.configKey[0], 'CUST');
-        assert.strictEqual(thisConfigManager.configDesc[0], 'CUSTOM Keyword Test');
+        assert.strictEqual(configManager.configDesc.length, 6);
+        assert.strictEqual(configManager.configKey[0], 'CUST');
+        assert.strictEqual(configManager.configDesc[0], 'CUSTOM Keyword Test');
 
         // Verify that test arrays contain the entire expected values
         // TODO
