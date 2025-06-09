@@ -18,11 +18,11 @@
   "capabilities": {
     "hoverProvider": "true"
   },
-  "publisher": "WilliamWu-HJ",
+  "publisher": "trinitronx",
   "main": "./out/extension.js",
   "repository": {
     "type": "git",
-    "url": "https://WilliamSuper@dev.azure.com/WilliamSuper/AcpiHelper/_git/AcpiHelper"
+    "url": "https://github.com/trinitronx/vscode-AcpiHelper/"
   },
   "contributes": {
     "commands": [

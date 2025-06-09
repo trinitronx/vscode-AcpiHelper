@@ -56,7 +56,7 @@ suite('Extension Test Suite', function (this: Mocha.Suite) {
     // this.timeout(30000);
 
     let sandbox: sinon.SinonSandbox;
-    const extension = vscode.extensions.getExtension('WilliamWu-HJ.acpihelper');
+    const extension = vscode.extensions.getExtension('trinitronx.acpihelper');
 
     suiteSetup(() => {
         if (process.env.DEBUG_CI === 'true') {
