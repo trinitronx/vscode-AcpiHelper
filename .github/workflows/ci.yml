@@ -138,7 +138,7 @@ jobs:
           ref: ${{ needs.setup_outputs.outputs.sha }}
       - uses: actions/setup-node@v4
       - name: Install dependencies
-        run: npm install
+        run: npm install --omit=dev
       - name: Run typescript Transpile
         run: npm run vscode:prepublish
       - name: Package extension
