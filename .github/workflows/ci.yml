@@ -13,7 +13,7 @@ on:
       - main
       - develop
 env:
-  debug_ci: false
+  debug_ci: true
 jobs:
   setup_outputs:
     runs-on: ubuntu-latest
