@@ -133,6 +133,9 @@ jobs:
       ) &&
       needs.test.result == 'success'
     steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: ${{ needs.setup_outputs.outputs.sha }}
       - name: Run typescript Transpile
         run: npm run vscode:prepublish
       - name: Package extension
