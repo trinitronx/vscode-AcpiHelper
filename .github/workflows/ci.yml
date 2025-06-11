@@ -83,6 +83,41 @@ jobs:
         env:
           DISPLAY: ${{ runner.os == 'Linux' && ':99.0' || '' }}
           DEBUG_CI: ${{ env.debug_ci == 'true' || runner.debug == '1' }}
+  debug:
+    runs-on: ubuntu-latest
+    if: ${{ vars.debug_ci == 'true' || vars.ACTIONS_RUNNER_DEBUG == 'true' || vars.ACTIONS_STEP_DEBUG == 'true' }}
+    needs:
+      - setup_outputs
+      - test
+    steps:
+      - name: Debug auth
+        run: |
+          echo "Authorized: ${{ needs.setup_outputs.outputs.authorized }}"
+      - name: Debug vsix name
+        run: |
+          echo "VSIX Name: ${{ needs.setup_outputs.outputs.vsix_name }}"
+      - name: Debug version
+        run: |
+          echo "Version: ${{ needs.setup_outputs.outputs.version }}"
+      - name: Debug vsix path
+        run: |
+          echo "VSIX Path: ${{ needs.setup_outputs.outputs.vsix_path }}"
+      - name: Debug SHA
+        run: |
+          echo "SHA: ${{ needs.setup_outputs.outputs.sha }}"
+      - name: Debug abbreviated SHA
+        run: |
+          echo "Abbreviated SHA: ${{ needs.setup_outputs.outputs.abbrev_sha }}"
+      - name: Debug extension name
+        run: |
+          echo "Extension Name: ${{ needs.setup_outputs.outputs.extension_name }}"
+      - name: Debug build conditions
+        run: |
+          echo "Authorized?: ${{ format('{0}', needs.setup_outputs.outputs.authorized) == 'true' }}"
+          echo "Pull Request Merged?: ${{ github.event.pull_request.merged == true }}"
+          echo "PR Labels contains 'release'?: ${{ contains(github.event.pull_request.labels.*.name, 'release') }}"
+          echo "Label event is 'release'?: ${{ github.event.label.name == 'release' }}"
+          echo "Test result is 'success'?: ${{ needs.test.result == 'success' }}"
   build:
     runs-on: ubuntu-latest
     needs:
