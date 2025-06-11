@@ -124,10 +124,12 @@ jobs:
       - test
     if: >-
       format('{0}', needs.setup_outputs.outputs.authorized) == 'true' &&
-      github.event.pull_request.merged == true &&
       (
         contains(github.event.pull_request.labels.*.name, 'release') ||
-          github.event.label.name == 'release'
+          (
+            github.event.label.name == 'release' &&
+            github.event.pull_request.merged == true
+          )
       ) &&
       needs.test.result == 'success'
     steps:
