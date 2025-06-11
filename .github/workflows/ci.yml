@@ -61,7 +61,7 @@ jobs:
         os: [macos-13, macos-14, macos-15, ubuntu-latest, windows-latest]
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v4
         with:
           node-version: 18
       - name: Install pnpm
@@ -136,6 +136,7 @@ jobs:
       - uses: actions/checkout@v2
         with:
           ref: ${{ needs.setup_outputs.outputs.sha }}
+      - uses: actions/setup-node@v4
       - name: Run typescript Transpile
         run: npm run vscode:prepublish
       - name: Package extension
