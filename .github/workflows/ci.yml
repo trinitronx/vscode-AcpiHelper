@@ -22,6 +22,7 @@ jobs:
       version: ${{ steps.get_version.outputs.version }}
       vsix_path: ${{ steps.get_vsix_path.outputs.vsix_path }}
       sha: ${{ steps.master_branch.outputs.sha }}
+      abbrev_sha: ${{ steps.get_abbrev_sha.outputs.sha }}
       extension_name: ${{ steps.get_extension_name.outputs.extension_name }}
       authorized: ${{ steps.check_user_permissions.outputs.require-result }}
     steps:
@@ -34,12 +35,15 @@ jobs:
       - name: Extract master SHA
         id: master_branch
         run: echo "sha=$(git rev-parse master)" >> "$GITHUB_OUTPUT"
+      - name: Get abbreviated sha (12 chars)
+        id: get_abbrev_sha
+        run: echo "sha=$(echo -n '${{ steps.master_branch.outputs.sha }}' | cut -c 1-11 )" >> "$GITHUB_OUTPUT"
       - name: Get VSCode Extension name
         id: get_extension_name
         run: echo "extension_name=$(echo "${{ github.repository_owner }}" | tr 'A-Z' 'a-z').$(echo "${{ github.event.repository.name }}" | sed -e 's/^vscode-//g')" >> "$GITHUB_OUTPUT"
       - name: Get .vsix artifact name
         id: get_vsix_name
-        run: echo "vsix_name=${{ steps.get_extension_name.outputs.extension_name }}-${{ steps.get_version.outputs.version }}.${{ steps.master_branch.outputs.sha }}" >> "$GITHUB_OUTPUT"
+        run: echo "vsix_name=${{ steps.get_extension_name.outputs.extension_name }}-${{ steps.get_version.outputs.version }}.${{ steps.get_abbrev_sha.outputs.sha }}" >> "$GITHUB_OUTPUT"
       - name: Get .vsix path
         id: get_vsix_path
         run: echo "vsix_path=${{ steps.get_vsix_name.outputs.vsix_name }}.vsix" >> "$GITHUB_OUTPUT"
