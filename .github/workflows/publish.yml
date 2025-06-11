@@ -1,19 +1,86 @@
-name: Publish to marketplace
-
+name: Publish Extension
 on:
-    release:
-        types: [published]
-
+  workflow_dispatch:
+    inputs:
+      vsix_artifact:
+        description: "Name of the .vsix artifact from CI to publish"
+        required: true
+        type: string
+      workflow_run_id:
+        description: "Run ID of the workflow that generated the artifact (passed to findBy options)"
+        required: true
+        type: number
+      publish_ms:
+        description: "Publish to VS Code Marketplace"
+        required: false
+        default: true
+        type: boolean
+      publish_ovsx:
+        description: "Publish to Open VSX"
+        required: false
+        default: true
+        type: boolean
+env:
+  debug_ci: true
 jobs:
-    build:
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/checkout@v1
-            - name: Build App
-              run: npm install --omit=dev
-            - name: Build App
-              run: npm run vscode:prepublish
-            - name: Publish to marketplace
-              run: |
-                  vsce package
-                  vsce publish --pat "${{secrets.VSCODE_PUBLISH_KEY}}"
+  check_auth:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check triggering user permissions
+        id: check_user_permissions
+        uses: actions-cool/check-user-permission@v2.3.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          username: ${{ github.triggering_actor }}
+          require: write
+          error-if-missing: true
+    outputs:
+      authorized: ${{ steps.check_user_permissions.outputs.require-result }}
+  publish_vscode:
+    name: Publish to VS Code Marketplace
+    runs-on: ubuntu-latest
+    needs: check_auth
+    if: github.event.inputs.publish_ms == 'true' && format('{0}', needs.check_auth.outputs.authorized) == 'true'
+    steps:
+      - name: Download artifact
+        id: download_artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ github.event.inputs.vsix_artifact }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: ${{ github.event.inputs.workflow_run_id }}
+      - name: Check for vsce
+        run: which vsce || echo "vsce not found"
+        if: ${{ env.debug_ci == 'true' || runner.debug == '1' }}
+      - name: List files
+        run: ls -lA
+        if: ${{ env.debug_ci == 'true' || runner.debug == '1' }}
+      - name: Install eza (Linux deb)
+        run: sudo apt-get install -y eza
+        if: ${{ env.debug_ci == 'true' || runner.debug == '1' }}
+      - name: List files in pretty print tree view
+        run: eza --icons --color-scale --classify --git -la --header --tree --ignore-glob='.git'  --git-ignore --binary
+        if: ${{ env.debug_ci == 'true' || runner.debug == '1' }}
+
+      - name: Publish to VS Code Marketplace
+        env:
+          VSCE_PAT: "${{ secrets.VSCE_PAT }}"
+        run: echo npx vsce publish --packagePath ${{ steps.download_artifact.outputs.download-path }}
+
+  publish_ovsx:
+    name: Publish to Open VSX
+    runs-on: ubuntu-latest
+    needs: check_auth
+    if: github.event.inputs.publish_ovsx == 'true' && format('{0}', needs.check_auth.outputs.authorized) == 'true'
+    steps:
+      - name: Download artifact
+        id: download_artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ github.event.inputs.vsix_artifact }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: ${{ github.event.inputs.workflow_run_id }}
+      - name: Publish to Open VSX
+        env:
+          OVSX_PAT: "${{ secrets.OVSX_PAT }}"
+        run: echo npx ovsx publish ${{ steps.download_artifact.outputs.download-path }}/${{ github.event.inputs.vsix_artifact }}.vsix

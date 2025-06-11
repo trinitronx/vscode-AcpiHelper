@@ -13,8 +13,47 @@ on:
       - main
       - develop
 env:
-  debug_ci: false
+  debug_ci: true
 jobs:
+  setup_outputs:
+    runs-on: ubuntu-latest
+    outputs:
+      vsix_name: ${{ steps.get_vsix_name.outputs.vsix_name }}
+      version: ${{ steps.get_version.outputs.version }}
+      vsix_path: ${{ steps.get_vsix_path.outputs.vsix_path }}
+      sha: ${{ steps.master_branch.outputs.sha }}
+      abbrev_sha: ${{ steps.get_abbrev_sha.outputs.sha }}
+      extension_name: ${{ steps.get_extension_name.outputs.extension_name }}
+      authorized: ${{ steps.check_user_permissions.outputs.require-result }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: master
+      - name: Get version
+        id: get_version
+        run: echo "version=$(node -p "require('./package.json').version")" >> "$GITHUB_OUTPUT"
+      - name: Extract master SHA
+        id: master_branch
+        run: echo "sha=$(git rev-parse master)" >> "$GITHUB_OUTPUT"
+      - name: Get abbreviated sha (12 chars)
+        id: get_abbrev_sha
+        run: echo "sha=$(echo -n '${{ steps.master_branch.outputs.sha }}' | cut -c 1-11 )" >> "$GITHUB_OUTPUT"
+      - name: Get VSCode Extension name
+        id: get_extension_name
+        run: echo "extension_name=$(echo "${{ github.repository_owner }}" | tr 'A-Z' 'a-z').$(echo "${{ github.event.repository.name }}" | sed -e 's/^vscode-//g')" >> "$GITHUB_OUTPUT"
+      - name: Get .vsix artifact name
+        id: get_vsix_name
+        run: echo "vsix_name=${{ steps.get_extension_name.outputs.extension_name }}-${{ steps.get_version.outputs.version }}.${{ steps.get_abbrev_sha.outputs.sha }}" >> "$GITHUB_OUTPUT"
+      - name: Get .vsix path
+        id: get_vsix_path
+        run: echo "vsix_path=${{ steps.get_vsix_name.outputs.vsix_name }}.vsix" >> "$GITHUB_OUTPUT"
+      - name: Check triggering user permissions
+        id: check_user_permissions
+        uses: actions-cool/check-user-permission@v2.3.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          username: ${{ github.triggering_actor }}
+          require: write
   test:
     runs-on: ${{ matrix.os }}
     strategy:
@@ -44,6 +83,30 @@ jobs:
         env:
           DISPLAY: ${{ runner.os == 'Linux' && ':99.0' || '' }}
           DEBUG_CI: ${{ env.debug_ci == 'true' || runner.debug == '1' }}
+  build:
+    runs-on: ubuntu-latest
+    needs:
+      - setup_outputs
+      - test
+    if: >-
+      format('{0}', needs.setup_outputs.outputs.authorized) == 'true' &&
+      github.event.pull_request.merged == true &&
+      (
+        contains(github.event.pull_request.labels.*.name, 'release') ||
+          github.event.label.name == 'release'
+      ) &&
+      needs.test.result == 'success'
+    steps:
+      - name: Run typescript Transpile
+        run: npm run vscode:prepublish
+      - name: Package extension
+        run: npx vsce package --out ${{ needs.setup_outputs.outputs.vsix_path }}
+      - name: Upload VSIX artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ needs.setup_outputs.outputs.vsix_name }}-${{ github.run_number }}-${{ github.run_attempt }}
+          path: "${{ needs.setup_outputs.outputs.vsix_path }}"
+          if-no-files-found: 'error'
       - name: Check for vsce
         run: which vsce || echo "vsce not found"
         if: ${{ env.debug_ci == 'true' && runner.os != 'Windows' }}
@@ -59,3 +122,24 @@ jobs:
       - name: List files in pretty print tree view
         run: eza --icons --color-scale --classify --git -la --header --tree --ignore-glob='.git'  --git-ignore --binary
         if: ${{ env.debug_ci == 'true' && runner.os != 'Windows' }}
+      - name: Trigger publish workflow
+        if: ${{ success() && format('{0}', needs.setup_outputs.outputs.authorized) == 'true' }}
+        uses: actions/github-script@v7
+        env:
+          VSIX_ARTIFACT: "${{ needs.setup_outputs.outputs.vsix_name }}-${{ github.run_number }}-${{ github.run_attempt }}"
+        with:
+          script: |
+            const vsixArtifact = process.env.VSIX_ARTIFACT;
+            await github.rest.actions.createWorkflowDispatch({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: 'publish.yml',
+              ref: context.ref,
+              inputs: {
+                vsix_artifact: vsixArtifact,
+                workflow_run_id: context.runId,
+                publish_ms: true,
+                publish_ovsx: true
+              }
+            })
+          result-encoding: string
