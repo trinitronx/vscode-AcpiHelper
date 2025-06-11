@@ -85,7 +85,6 @@ jobs:
           DEBUG_CI: ${{ env.debug_ci == 'true' || runner.debug == '1' }}
   debug:
     runs-on: ubuntu-latest
-    if: ${{ vars.debug_ci == 'true' || vars.ACTIONS_RUNNER_DEBUG == 'true' || vars.ACTIONS_STEP_DEBUG == 'true' }}
     needs:
       - setup_outputs
       - test
