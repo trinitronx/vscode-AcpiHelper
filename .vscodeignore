@@ -5,6 +5,7 @@
 src/**
 .gitignore
 **/tsconfig.json
+**/tsconfig.test.json
 **/*.map
 **/*.ts
 web/**
@@ -12,3 +13,9 @@ node_modules/*
 logs
 *.log
 *.tsbuildinfo
+.mypy_cache/**
+.github/**
+out/test/**
+vsc-extension-quickstart.md
+pnpm-lock.yaml*
+ToolsToGetAcpiPreDefinedNames/**
