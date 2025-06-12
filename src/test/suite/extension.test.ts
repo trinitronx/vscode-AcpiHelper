@@ -4,7 +4,7 @@ import assert from 'assert';
 import fs from 'fs';
 import path from 'path';
 import sinon from 'sinon';
-import vscode from 'vscode';
+import * as vscode from 'vscode';
 import rewire = require("rewire");
 let acpihelper = rewire("../../extension");
 
