@@ -34,7 +34,9 @@ jobs:
         run: echo "version=$(node -p "require('./package.json').version")" >> "$GITHUB_OUTPUT"
       - name: Extract master SHA
         id: master_branch
-        run: echo "sha=$(git rev-parse master)" >> "$GITHUB_OUTPUT"
+## TODO: Put this line back when debugging is done
+        # run: echo "sha=$(git rev-parse master)" >> "$GITHUB_OUTPUT"
+        run: echo "sha=${{ github.sha }}" >> "$GITHUB_OUTPUT"
       - name: Get abbreviated sha (12 chars)
         id: get_abbrev_sha
         run: echo "sha=$(echo -n '${{ steps.master_branch.outputs.sha }}' | cut -c 1-11 )" >> "$GITHUB_OUTPUT"
