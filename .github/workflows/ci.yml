@@ -179,7 +179,7 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               workflow_id: 'publish.yml',
-              ref: context.ref,
+              ref: context.sha,
               inputs: {
                 vsix_artifact: vsixArtifact,
                 workflow_run_id: context.runId,
