@@ -188,3 +188,4 @@ jobs:
               }
             })
           result-encoding: string
+          github-token: ${{ secrets.VSCODE_ACPIHELPER_PUBLISH }}
