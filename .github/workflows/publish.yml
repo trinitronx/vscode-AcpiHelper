@@ -37,10 +37,10 @@ jobs:
     outputs:
       authorized: ${{ steps.check_user_permissions.outputs.require-result }}
   publish_vscode:
-    name: Publish to VS Code Marketplace
+    name: Publish Extension to Marketplace(s)
     runs-on: ubuntu-latest
     needs: check_auth
-    if: github.event.inputs.publish_ms == 'true' && format('{0}', needs.check_auth.outputs.authorized) == 'true'
+    if: format('{0}', needs.check_auth.outputs.authorized) == 'true'
     steps:
       - name: Download artifact
         id: download_artifact
@@ -61,26 +61,16 @@ jobs:
       - name: List files in pretty print tree view
         run: eza --icons --color-scale --classify --git -la --header --tree --ignore-glob='.git'  --git-ignore --binary
         if: ${{ env.debug_ci == 'true' || runner.debug == '1' }}
-
+      - name: Get vsix path
+        id: get_vsix_path
+        run: find ${{ steps.download_artifact.outputs.download-path }} -name '*.vsix' -type f -printf 'vsix_name=%f' -quit >> "$GITHUB_ENV"
       - name: Publish to VS Code Marketplace
         env:
           VSCE_PAT: "${{ secrets.VSCE_PAT }}"
-        run: echo npx vsce publish --packagePath ${{ steps.download_artifact.outputs.download-path }}
-
-  publish_ovsx:
-    name: Publish to Open VSX
-    runs-on: ubuntu-latest
-    needs: check_auth
-    if: github.event.inputs.publish_ovsx == 'true' && format('{0}', needs.check_auth.outputs.authorized) == 'true'
-    steps:
-      - name: Download artifact
-        id: download_artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: ${{ github.event.inputs.vsix_artifact }}
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          run-id: ${{ github.event.inputs.workflow_run_id }}
+        run: echo npx vsce publish --pre-release --no-dependencies --no-yarn --no-git-tag-version --no-verify-signatures --no-confirm --packagePath ${{ steps.download_artifact.outputs.download-path }}/${{ steps.get_vsix_path.outputs.vsix_name }}
+        if: github.event.inputs.publish_ms == 'true'
       - name: Publish to Open VSX
         env:
           OVSX_PAT: "${{ secrets.OVSX_PAT }}"
-        run: echo npx ovsx publish ${{ steps.download_artifact.outputs.download-path }}/${{ github.event.inputs.vsix_artifact }}.vsix
+        run: echo npx ovsx publish --pre-release --no-dependencies ${{ steps.download_artifact.outputs.download-path }}/${{ steps.get_vsix_path.outputs.vsix_name }}
+        if: github.event.inputs.publish_ovsx == 'true'
