@@ -1,12 +1,12 @@
-import * as assert from 'assert';
+import assert from 'assert';
 // You can import and use all API from the 'vscode' module
 // as well as import your extension to test it
-import * as fs from 'fs';
-import * as path from 'path';
-import * as sinon from 'sinon';
+import fs from 'fs';
+import path from 'path';
+import sinon from 'sinon';
 import * as vscode from 'vscode';
 import rewire = require("rewire");
-let acpihelper = rewire("../../extension");
+let acpeye = rewire("../../extension");
 
 let debugCI: boolean = false; // set env var DEBUG_CI=true to turn on
 let mockOutputChannel: sinon.SinonStubbedInstance<vscode.OutputChannel>;
@@ -56,7 +56,7 @@ suite('Extension Test Suite', function (this: Mocha.Suite) {
     // this.timeout(30000);
 
     let sandbox: sinon.SinonSandbox;
-    const extension = vscode.extensions.getExtension('trinitronx.acpihelper');
+    const extension = vscode.extensions.getExtension('trinitronx.acpeye');
 
     suiteSetup(() => {
         if (process.env.DEBUG_CI === 'true') {
@@ -184,13 +184,13 @@ suite('Extension Test Suite', function (this: Mocha.Suite) {
         });
 
         const commands = await vscode.commands.getCommands();
-        // debugLog('Available commands:', commands.find((str, idx) => { str.includes('acpihelper.reloadConfig') ? true : false; }));
+        // debugLog('Available commands:', commands.find((str, idx) => { str.includes('acpeye.reloadConfig') ? true : false; }));
         // debugLog('Available commands:', commands);
         // Activate the extension by executing one of its commands
-        await vscode.commands.executeCommand('acpihelper.Help');
-        debugLog('acpihelper commands:', commands.filter(name => name.startsWith("acpi")));
-        assert.ok(commands.includes('acpihelper.reloadConfig'), 'Extension reloadConfig command should be available');
-        assert.ok(commands.includes('acpihelper.Help'), 'Extension HelpInfo command should be available');
+        await vscode.commands.executeCommand('acpeye.Help');
+        debugLog('acpeye commands:', commands.filter(name => name.startsWith("acpeye")));
+        assert.ok(commands.includes('acpeye.reloadConfig'), 'Extension reloadConfig command should be available');
+        assert.ok(commands.includes('acpeye.Help'), 'Extension HelpInfo command should be available');
     });
 
     test('Config path explicitly disabled', async () => {
@@ -205,8 +205,8 @@ suite('Extension Test Suite', function (this: Mocha.Suite) {
 
             // Set config to disabled state
             // (Triggers automatic config reload)
-            await vscode.workspace.getConfiguration('acpihelper').update('configPath', '', true);
-            await vscode.workspace.getConfiguration('acpihelper').update('includeUserConfig', true, true);
+            await vscode.workspace.getConfiguration('acpeye').update('configPath', '', true);
+            await vscode.workspace.getConfiguration('acpeye').update('includeUserConfig', true, true);
 
             await vscode.commands.executeCommand('workbench.panel.output.focus');
 
@@ -265,8 +265,8 @@ suite('Extension Test Suite', function (this: Mocha.Suite) {
 
         // Set config to use test fixture
         // (Triggers automatic config reload)
-        await vscode.workspace.getConfiguration('acpihelper').update('configPath', testConfigPath, true);
-        await vscode.workspace.getConfiguration('acpihelper').update('includeUserConfig', true, true);
+        await vscode.workspace.getConfiguration('acpeye').update('configPath', testConfigPath, true);
+        await vscode.workspace.getConfiguration('acpeye').update('includeUserConfig', true, true);
 
         // Wait for the config to finish loading, and for result arrays to be populated
         await configLoadedPromise;
@@ -309,8 +309,8 @@ suite('Extension Test Suite', function (this: Mocha.Suite) {
         assert.ok(configManager, 'configManager should be exported');
         const configLoadedPromise = whenConfigLoaded();
         // Set config to use default path
-        await vscode.workspace.getConfiguration('acpihelper').update('configPath', '', true);
-        await vscode.workspace.getConfiguration('acpihelper').update('includeUserConfig', false, true);
+        await vscode.workspace.getConfiguration('acpeye').update('configPath', '', true);
+        await vscode.workspace.getConfiguration('acpeye').update('includeUserConfig', false, true);
 
         // Verify output messages
         [sinon.match((arg: string) => arg.startsWith('Default extension-provided config path')),

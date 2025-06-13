@@ -10,11 +10,11 @@ let output: vscode.OutputChannel;
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
-    output = vscode.window.createOutputChannel("AcpiHelper");
+    output = vscode.window.createOutputChannel("AcpEye");
     // Use an output channel to output diagnostic information
     // This line of code will only be executed once when your extension is activated
     //console.log ('Now Lets check the path');
-    output.appendLine('Congratulations, your extension "acpihelper" is now active!');
+    output.appendLine('Congratulations, your extension "acpeye" is now active!');
 
 
     // Load the config file once during activation
@@ -29,14 +29,14 @@ export function activate(context: vscode.ExtensionContext) {
     // The command has been defined in the package.json file
     // Now provide the implementation of the command with registerCommand
     // The commandId parameter must match the command field in package.json
-    let disposable = vscode.commands.registerCommand('acpihelper.Help', () => {
+    let disposable = vscode.commands.registerCommand('acpeye.Help', () => {
     // The code you place here will be executed every time your command is executed
     // Display a message box to the user
-        vscode.window.showInformationMessage('Hello World from AcpiHelper!');
+        vscode.window.showInformationMessage('Hello World from AcpEye!');
     });
 
     // Add reload config command
-    let reloadConfig = vscode.commands.registerCommand('acpihelper.reloadConfig', () => {
+    let reloadConfig = vscode.commands.registerCommand('acpeye.reloadConfig', () => {
         loadConfig(context);
         return Promise.resolve();
     });
@@ -72,7 +72,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 // Load or reload the extension config
 function loadConfig(context: vscode.ExtensionContext) {
-    const config = vscode.workspace.getConfiguration('acpihelper');
+    const config = vscode.workspace.getConfiguration('acpeye');
     const extensionDir = context.extensionPath;
     let cfgPath = config.get('configPath', "");
     let includeUserConfig = config.get('includeUserConfig', false);
@@ -121,7 +121,7 @@ function loadConfig(context: vscode.ExtensionContext) {
 
 // Event handler for configuration changes
 function handleConfigChange(event: vscode.ConfigurationChangeEvent, context: vscode.ExtensionContext) {
-    if (event.affectsConfiguration('acpihelper')) {
+    if (event.affectsConfiguration('acpeye')) {
     // Configuration related to this extension has changed
         loadConfig(context);
     }

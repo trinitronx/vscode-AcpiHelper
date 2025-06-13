@@ -1,19 +1,33 @@
 {
-  "name": "acpihelper",
-  "displayName": "AcpiHelper",
-  "description": "Provide ACPI Language Help Info",
+  "name": "acpeye",
+  "displayName": "ACPeye",
+  "description": "Instant ACPI/ASL documentation tooltips.",
+  "license": "MIT",
   "version": "1.0.0",
   "icon": "Logo.png",
   "engines": {
-    "vscode": "^1.75.0"
+    "vscode": "^1.74.0"
   },
   "categories": [
     "Other"
   ],
+  "keywords": [
+    "ACPI",
+    "ASL",
+    "hover",
+    "tooltip",
+    "help",
+    "documentation",
+    "UEFI",
+    "BIOS",
+    "DSDT",
+    "SSDT",
+    "AML"
+  ],
   "activationEvents": [
-    "onCommand:acpihelper.HelpInfo",
+    "onCommand:acpeye.Help",
     "onLanguage:EASL",
-    "onCommand:acpihelper.reloadConfig"
+    "onCommand:acpeye.reloadConfig"
   ],
   "capabilities": {
     "hoverProvider": "true"
@@ -22,32 +36,32 @@
   "main": "./out/extension.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/trinitronx/vscode-AcpiHelper/"
+    "url": "https://github.com/trinitronx/vscode-ACPeye/"
   },
   "contributes": {
     "commands": [
       {
-        "command": "acpihelper.HelpInfo",
+        "command": "acpeye.Help",
         "title": "Help",
-        "category": "ACPI Helper"
+        "category": "ACPeye"
       },
       {
-        "command": "acpihelper.reloadConfig",
+        "command": "acpeye.reloadConfig",
         "title": "Reload Config",
         "shortTitle": "Reload",
-        "category": "ACPI Helper"
+        "category": "ACPeye"
       }
     ],
     "configuration": {
-      "title": "Acpi Helper Extension",
+      "title": "ACPeye Extension",
       "type": "object",
       "properties": {
-        "acpihelper.includeUserConfig": {
+        "acpeye.includeUserConfig": {
           "type": "boolean",
           "default": false,
           "description": "Include the extra ACPI keywords & descriptions from a user-provided JSON config file, specified by the configPath setting. If false, the included settings from this extension will be used. (\"AcpiCfg.json\" in the extension directory)"
         },
-        "acpihelper.configPath": {
+        "acpeye.configPath": {
           "type": "string",
           "default": "",
           "description": "Absolute path to a JSON config file containing extra ACPI ASL keyword descriptions. If not set (empty string) and includeUserConfig is true, the default \"AcpiCfg.json\" bundled with this extension will not be used. This is useful to only display help for standard keywords specified by the ACPI spec."
@@ -79,7 +93,7 @@
   "scripts": {
     "vscode:prepublish": "npm run compile",
     "compile": "tsc -p ./",
-    "compile-test": "tsc -p ./ && npm run copy-test-fixtures",
+    "compile-test": "tsc -p ./tsconfig.test.json && npm run copy-test-fixtures",
     "copy-test-fixtures": "cp -r src/test/fixtures out/test/",
     "watch": "tsc -watch -p ./",
     "pretest": "npm run compile-test && npm run lint",
@@ -90,11 +104,11 @@
     "@stylistic/eslint-plugin": "^4.4.0",
     "@stylistic/eslint-plugin-ts": "^4.4.0",
     "@types/glob": "^7.1.3",
-    "@types/mocha": "^8.2.2",
-    "@types/node": "14.x",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "20.x",
     "@types/rewire": "^2.5.30",
     "@types/sinon": "^17.0.4",
-    "@types/vscode": "^1.54.0",
+    "@types/vscode": "^1.74.0",
     "@typescript-eslint/eslint-plugin": "^8.33.0",
     "@vscode/test-electron": "^2.5.2",
     "eslint": "^9.28.0",
@@ -102,6 +116,7 @@
     "mocha": "^8.4.0",
     "rewire": "^7.0.0",
     "sinon": "^20.0.0",
-    "typescript": "^4.3.2"
+    "typescript": "^5.8.3",
+    "npm-run-all": "^4.1.5"
   }
 }
