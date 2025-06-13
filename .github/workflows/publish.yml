@@ -55,11 +55,8 @@ jobs:
       - name: List files
         run: ls -lA
         if: ${{ env.debug_ci == 'true' || runner.debug == '1' }}
-      - name: Install eza (Linux deb)
-        run: sudo apt-get install -y eza
-        if: ${{ env.debug_ci == 'true' || runner.debug == '1' }}
       - name: List files in pretty print tree view
-        run: eza --icons --color-scale --classify --git -la --header --tree --ignore-glob='.git'  --git-ignore --binary
+        run: tree -R
         if: ${{ env.debug_ci == 'true' || runner.debug == '1' }}
       - name: Get vsix path
         id: get_vsix_path
