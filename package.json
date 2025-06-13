@@ -25,7 +25,7 @@
     "AML"
   ],
   "activationEvents": [
-    "onCommand:acpeye.HelpInfo",
+    "onCommand:acpeye.Help",
     "onLanguage:EASL",
     "onCommand:acpeye.reloadConfig"
   ],
@@ -41,7 +41,7 @@
   "contributes": {
     "commands": [
       {
-        "command": "acpeye.HelpInfo",
+        "command": "acpeye.Help",
         "title": "Help",
         "category": "ACPeye"
       },
