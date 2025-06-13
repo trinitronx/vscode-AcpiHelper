@@ -178,6 +178,7 @@ jobs:
           script: |
             const vsixArtifact = process.env.VSIX_ARTIFACT;
             const dispatchRef = process.env.DISPATCH_REF || 'master';
+            const runId = process.env.GITHUB_RUN_ID;
             await github.rest.actions.createWorkflowDispatch({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -185,7 +186,7 @@ jobs:
               ref: dispatchRef,
               inputs: {
                 vsix_artifact: vsixArtifact,
-                workflow_run_id: context.runId,
+                workflow_run_id: runId,
                 publish_ms: true,
                 publish_ovsx: true
               }
