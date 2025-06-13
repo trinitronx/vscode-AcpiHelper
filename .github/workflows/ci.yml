@@ -146,7 +146,7 @@ jobs:
       - name: Run typescript Transpile
         run: npm run vscode:prepublish
       - name: Package extension
-        run: npx vsce package --out ${{ needs.setup_outputs.outputs.vsix_path }}
+        run: npx vsce package --pre-release --out ${{ needs.setup_outputs.outputs.vsix_path }}
       - name: Upload VSIX artifact
         uses: actions/upload-artifact@v4
         with:

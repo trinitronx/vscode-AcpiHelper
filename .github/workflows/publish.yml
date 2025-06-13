@@ -71,10 +71,10 @@ jobs:
       - name: Publish to VS Code Marketplace
         env:
           VSCE_PAT: "${{ secrets.VSCE_PAT }}"
-        run: echo npx vsce publish --pre-release --no-dependencies --no-yarn --no-git-tag-version --no-verify-signatures --no-confirm --packagePath ${{ steps.download_artifact.outputs.download-path }}/${{ steps.get_vsix_path.outputs.vsix_name }}
+        run: npx vsce publish --pre-release --no-dependencies --no-yarn --no-git-tag-version --packagePath ${{ steps.download_artifact.outputs.download-path }}/${{ steps.get_vsix_path.outputs.vsix_name }}
         if: github.event.inputs.publish_ms == 'true'
       - name: Publish to Open VSX
         env:
           OVSX_PAT: "${{ secrets.OVSX_PAT }}"
-        run: echo npx ovsx publish --pre-release --no-dependencies ${{ steps.download_artifact.outputs.download-path }}/${{ steps.get_vsix_path.outputs.vsix_name }}
+        run: npx ovsx publish --pre-release --no-dependencies ${{ steps.download_artifact.outputs.download-path }}/${{ steps.get_vsix_path.outputs.vsix_name }}
         if: github.event.inputs.publish_ovsx == 'true'
