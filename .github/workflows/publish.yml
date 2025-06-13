@@ -64,6 +64,13 @@ jobs:
       - name: Get vsix path
         id: get_vsix_path
         run: find ${{ steps.download_artifact.outputs.download-path }} -name '*.vsix' -type f -printf 'vsix_name=%f' -quit >> "$GITHUB_ENV"
+      - name: Debug vsix_name
+        run: |
+          pwd
+          echo "VSIX Name: ${{ steps.get_vsix_path.outputs.vsix_name }}"
+          find ${{ steps.download_artifact.outputs.download-path }} -name '*.vsix' -type f -printf 'vsix_name=%f' -quit
+          find ${{ steps.download_artifact.outputs.download-path }} -name '*.vsix' -type f -print -quit
+        if: ${{ env.debug_ci == 'true' || runner.debug == '1' }}
       - name: Publish to VS Code Marketplace
         env:
           VSCE_PAT: "${{ secrets.VSCE_PAT }}"
