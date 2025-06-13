@@ -23,6 +23,7 @@ jobs:
       vsix_path: ${{ steps.get_vsix_path.outputs.vsix_path }}
       sha: ${{ steps.master_branch.outputs.sha }}
       abbrev_sha: ${{ steps.get_abbrev_sha.outputs.sha }}
+      dispatch_ref: ${{ github.event.pull_request.head.ref || false }}
       extension_name: ${{ steps.get_extension_name.outputs.extension_name }}
       authorized: ${{ steps.check_user_permissions.outputs.require-result }}
     steps:
@@ -172,14 +173,16 @@ jobs:
         uses: actions/github-script@v7
         env:
           VSIX_ARTIFACT: "${{ needs.setup_outputs.outputs.vsix_name }}-${{ github.run_number }}-${{ github.run_attempt }}"
+          DISPATCH_REF: "${{ needs.setup_outputs.outputs.dispatch_ref }}"
         with:
           script: |
             const vsixArtifact = process.env.VSIX_ARTIFACT;
+            const dispatchRef = process.env.DISPATCH_REF || 'master';
             await github.rest.actions.createWorkflowDispatch({
               owner: context.repo.owner,
               repo: context.repo.repo,
               workflow_id: 'publish.yml',
-              ref: context.sha,
+              ref: dispatchRef,
               inputs: {
                 vsix_artifact: vsixArtifact,
                 workflow_run_id: context.runId,
